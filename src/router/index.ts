@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-const HomeView = () => import('../views/HomeView.vue')
+const WidgetView = () => import('../views/WidgetView.vue')
+const BotView = () => import('../views/BotView.vue')
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -8,7 +9,12 @@ export const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: WidgetView
+    },
+    {
+      path: '/bot',
+      name: 'bot',
+      component: BotView
     }
   ]
 })
