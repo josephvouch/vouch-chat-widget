@@ -1,16 +1,31 @@
 <template>
-  <div
-    class="chatbot-activator-wrapper pointer-events-none fixed"
-    :style="positionStyle"
-    aria-live="polite"
-  >
+  <div class="chatbot-activator-wrapper vc3-pointer-events-none vc3-fixed" :style="positionStyle" aria-live="polite">
     <button
       ref="buttonEl"
       type="button"
-      class="chatbot-activator pointer-events-auto relative flex items-center justify-center rounded-full shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+      class="
+        chatbot-activator
+        vc3-pointer-events-auto
+        vc3-relative
+        vc3-flex
+        vc3-items-center
+        vc3-justify-center
+        vc3-rounded-full
+        vc3-shadow-lg
+        focus:vc3-outline-none
+        focus-visible:vc3-ring-2
+        focus-visible:vc3-ring-sky-500
+        focus-visible:vc3-ring-offset-2
+        hover:vc3-shadow-xl
+        hover:vc3--translate-y-0.5
+      "
       :class="[
-        open ? 'bg-sky-600 text-white' : 'bg-white text-sky-600',
-        reducedMotion ? 'transition-none' : 'transition duration-200 ease-out'
+        open
+          ? 'vc3-bg-sky-600 vc3-text-white hover:vc3-bg-sky-500'
+          : 'vc3-bg-white vc3-text-sky-600 hover:vc3-bg-sky-50',
+        reducedMotion
+          ? 'vc3-transition-none'
+          : 'vc3-transition vc3-duration-200 vc3-ease-out',
       ]"
       :aria-expanded="open"
       :aria-pressed="open"
@@ -22,14 +37,21 @@
       <slot name="icon">
         <svg
           aria-hidden="true"
-          class="h-6 w-6"
+          class="vc3-h-6 vc3-w-6"
           fill="none"
           stroke="currentColor"
           stroke-width="1.5"
           viewBox="0 0 24 24"
         >
           <path
-            d="M8.25 9.75h7.5m-7.5 3h4.5M21 12c0 1.268-.63 2.548-1.716 3.732-.9.986-2.124 1.986-3.555 2.884-.823.519-1.735.99-2.656 1.33a.75.75 0 0 1-.548 0 17.214 17.214 0 0 1-2.656-1.33c-1.431-.898-2.655-1.898-3.555-2.884C3.63 14.548 3 13.268 3 12c0-4.694 4.398-8.25 9-8.25s9 3.556 9 8.25Z"
+            d="
+              M8.25 9.75h7.5m-7.5 3h4.5
+              M21 12c0 1.268-.63 2.548-1.716 3.732
+              -.9.986-2.124 1.986-3.555 2.884
+              -.823.519-1.735.99-2.656 1.33a.75.75 0 0 1-.548 0
+              17.214 17.214 0 0 1-2.656-1.33c-1.431-.898-2.655-1.898-3.555-2.884
+              C3.63 14.548 3 13.268 3 12c0-4.694 4.398-8.25 9-8.25s9 3.556 9 8.25Z
+            "
             stroke-linecap="round"
             stroke-linejoin="round"
           />
@@ -48,33 +70,33 @@ import { computed, onMounted, ref } from 'vue'
 const props = defineProps({
   open: {
     type: Boolean,
-    default: false
+    default: false,
   },
   unreadCount: {
     type: Number,
-    default: 0
+    default: 0,
   },
   position: {
     type: String as () => 'left' | 'right',
     default: 'right',
-    validator: (value: string) => ['left', 'right'].includes(value)
+    validator: (value: string) => ['left', 'right'].includes(value),
   },
   bottom: {
     type: Number,
-    default: 24
+    default: 24,
   },
   horizontalOffset: {
     type: Number,
-    default: 24
+    default: 24,
   },
   zIndex: {
     type: Number,
-    default: 50
+    default: 50,
   },
   label: {
     type: String,
-    default: 'Open chat'
-  }
+    default: 'Open chat',
+  },
 })
 
 const emit = defineEmits<{
@@ -88,37 +110,43 @@ const reducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-const buttonLabel = computed(() =>
-  props.open
-    ? `Close chat`
-    : props.unreadCount > 0
-      ? `Open chat, ${props.unreadCount} new messages`
-      : props.label
-)
+const buttonLabel = computed<string>(() => {
+  if (props.open) return 'Close chat'
+  if (props.unreadCount > 0) {
+    return `Open chat, ${props.unreadCount} new messages`
+  }
+  return props.label
+})
 
-const positionStyle = computed(() => ({
+const positionStyle = computed<Record<string, string>>(() => ({
   bottom: `${props.bottom}px`,
   [props.position]: `${props.horizontalOffset}px`,
-  zIndex: props.zIndex
+  zIndex: String(props.zIndex),
 }))
 
-const handleToggle = () => {
+const handleToggle = (): void => {
   emit('toggle')
-  emit(props.open ? 'close' : 'open')
+  if (props.open) {
+    emit('close')
+    return
+  }
+  emit('open')
 }
 
-const handleKeyToggle = () => {
+const handleKeyToggle = (): void => {
   handleToggle()
 }
 
-onMounted(() => {
+onMounted((): void => {
   if (!buttonEl.value) return
   buttonEl.value.dataset.testid = 'chatbot-activator'
 })
 
 defineExpose({
   el: buttonEl,
-  focus: () => buttonEl.value?.focus()
+  focus: (): void => {
+    buttonEl.value?.focus()
+  },
 })
 </script>
 

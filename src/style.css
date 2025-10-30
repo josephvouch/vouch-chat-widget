@@ -4,7 +4,12 @@
 
 @layer base {
   :root {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
       sans-serif;
     line-height: 1.5;
     font-weight: 400;
@@ -16,14 +21,14 @@
   }
 
   body {
-    @apply m-0 min-h-screen bg-slate-950 text-slate-100 antialiased;
+    @apply vc3-m-0 vc3-min-h-screen vc3-bg-slate-950 vc3-text-slate-100 vc3-antialiased;
   }
 
   a {
-    @apply font-medium text-indigo-400 underline-offset-4 transition hover:text-indigo-300;
+    @apply vc3-font-medium vc3-text-indigo-400 vc3-underline-offset-4 vc3-transition hover:vc3-text-indigo-300;
   }
 
   button {
-    @apply rounded-lg border border-transparent bg-slate-800 px-4 py-2 font-medium transition hover:border-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+    @apply vc3-rounded-lg vc3-border vc3-border-transparent vc3-bg-slate-800 vc3-px-4 vc3-py-2 vc3-font-medium vc3-transition hover:vc3-border-indigo-500 focus-visible:vc3-outline-none focus-visible:vc3-ring-2 focus-visible:vc3-ring-indigo-400 focus-visible:vc3-ring-offset-2 focus-visible:vc3-ring-offset-slate-950;
   }
 }

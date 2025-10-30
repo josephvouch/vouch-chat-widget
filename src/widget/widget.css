@@ -1,0 +1,26 @@
+@tailwind utilities;
+
+/* Safe, minimal styling to better match app dev */
+.chatbot-shell,
+.chatbot-shell * {
+  box-sizing: border-box;
+}
+
+/* Font stack parity */
+.chatbot-shell {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Match ring offset color used in app base */
+.chatbot-shell .chatbot-activator,
+.chatbot-shell .chatbot-view button {
+  --tw-ring-offset-color: rgb(2 6 23); /* slate-950 */
+}

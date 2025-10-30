@@ -1,26 +1,38 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { useChatbotStore } from '../stores/chatbot'
 
-const GLOBAL_SHORTCUT = { key: 'l', ctrlKey: true, shiftKey: true }
+const GLOBAL_SHORTCUT: Readonly<{
+  key: string
+  ctrlKey: boolean
+  shiftKey: boolean
+}> = Object.freeze({ key: 'l', ctrlKey: true, shiftKey: true })
 
-export const useChatbotWidget = () => {
+type ChatbotStore = ReturnType<typeof useChatbotStore>
+
+interface IChatbotWidgetHook {
+  store: ChatbotStore
+  setActivator: (el: HTMLElement | null) => void
+  restoreFocus: () => void
+}
+
+export const useChatbotWidget = (): IChatbotWidgetHook => {
   const store = useChatbotStore()
   const activatorEl = ref<HTMLElement | null>(null)
-  const lastFocusedEl = ref<Element | null>(null)
-  const previousOverflow = ref<string | null>(null)
+  const lastFocusedEl = ref<HTMLElement | null>(null)
 
-  const setActivator = (el: HTMLElement | null) => {
+  const setActivator = (el: HTMLElement | null): void => {
     activatorEl.value = el
   }
 
-  const restoreFocus = () => {
+  const restoreFocus = (): void => {
     if (typeof document === 'undefined') return
     if (!(lastFocusedEl.value instanceof HTMLElement)) {
       activatorEl.value?.focus()
       return
     }
-    const element = lastFocusedEl.value as HTMLElement
+    const element = lastFocusedEl.value
     if (document.contains(element)) {
       element.focus()
     } else {
@@ -28,31 +40,25 @@ export const useChatbotWidget = () => {
     }
   }
 
-  const handleVisibilityChange = (isOpen: boolean) => {
+  const handleVisibilityChange = (isOpen: boolean): void => {
     if (typeof document === 'undefined') return
     if (isOpen) {
       lastFocusedEl.value = document.activeElement
-      previousOverflow.value = document.body.style.overflow || null
-      document.body.style.overflow = 'hidden'
-    } else {
-      if (previousOverflow.value !== null) {
-        document.body.style.overflow = previousOverflow.value
-      } else {
-        document.body.style.removeProperty('overflow')
-      }
-      restoreFocus()
+      return
     }
+    restoreFocus()
   }
 
+  const { isOpen } = storeToRefs(store)
   watch(
-    store.isOpen,
-    (isOpen) => {
-      handleVisibilityChange(isOpen)
+    isOpen,
+    (val) => {
+      handleVisibilityChange(val)
     },
-    { immediate: true }
+    { immediate: true },
   )
 
-  const handleGlobalShortcut = (event: KeyboardEvent) => {
+  const handleGlobalShortcut = (event: KeyboardEvent): void => {
     if (
       event.key.toLowerCase() === GLOBAL_SHORTCUT.key &&
       event.ctrlKey === GLOBAL_SHORTCUT.ctrlKey &&
@@ -61,15 +67,15 @@ export const useChatbotWidget = () => {
       !event.metaKey
     ) {
       event.preventDefault()
-      store.toggle()
+      void store.toggle()
     }
   }
 
-  onMounted(() => {
+  onMounted((): void => {
     document.addEventListener('keydown', handleGlobalShortcut)
   })
 
-  onBeforeUnmount(() => {
+  onBeforeUnmount((): void => {
     document.removeEventListener('keydown', handleGlobalShortcut)
     if (store.isOpen) {
       handleVisibilityChange(false)
@@ -79,6 +85,6 @@ export const useChatbotWidget = () => {
   return {
     store,
     setActivator,
-    restoreFocus
+    restoreFocus,
   }
 }

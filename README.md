@@ -13,11 +13,11 @@ Run `pnpm dev` and open the default route to see the floating Chatbot Button Act
 
 ## Commands
 
-| Script      | Description                  |
-| ----------- | ---------------------------- |
-| `pnpm dev`  | Runs Vite with HMR.          |
-| `pnpm build`| Produces a production build. |
-| `pnpm lint` | Executes ESLint + Prettier.  |
+| Script       | Description                  |
+| ------------ | ---------------------------- |
+| `pnpm dev`   | Runs Vite with HMR.          |
+| `pnpm build` | Produces a production build. |
+| `pnpm lint`  | Executes ESLint + Prettier.  |
 
 ## Next Steps
 

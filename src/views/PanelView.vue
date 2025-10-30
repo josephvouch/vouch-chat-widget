@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
+import ChatbotPanel from '../components/chatbot/ChatbotPanel.vue'
 import ChatbotView from '../components/chatbot/ChatbotView.vue'
 import { useChatbotStore } from '../stores/chatbot'
 
-const router = useRouter()
 const store = useChatbotStore()
 const { isOpen, messages, isLoading } = storeToRefs(store)
 
@@ -20,17 +19,13 @@ onBeforeUnmount((): void => {
 
 const handleClose = (): void => {
   void store.close()
-  // If embedded in an iframe, request the host to close the panel instead of navigating.
   if (
     typeof window !== 'undefined' &&
     window.parent &&
     window.parent !== window
   ) {
     window.parent.postMessage({ type: 'vc:close' }, '*')
-    return
   }
-  // Fallback when running standalone: navigate to the preview route
-  void router.push({ name: 'preview' })
 }
 
 const handleSend = (payload: { text: string }): void => {
@@ -45,11 +40,9 @@ const handleReady = (): void => {
 </script>
 
 <template>
-  <section
-    class="bot-view vc3-flex vc3-min-h-screen vc3-flex-col vc3-bg-slate-950"
-  >
+  <ChatbotPanel :open="isOpen" aria-label="Chat">
     <ChatbotView
-      class="bot-view__chat vc3-flex-1"
+      class="vc3-pointer-events-auto vc3-flex-1"
       :open="isOpen"
       :messages="messages"
       :loading="isLoading"
@@ -57,24 +50,5 @@ const handleReady = (): void => {
       @send="handleSend"
       @ready="handleReady"
     />
-  </section>
+  </ChatbotPanel>
 </template>
-
-<style scoped>
-:deep(.chatbot-view) {
-  position: static;
-  inset: auto;
-  margin: 0;
-  width: 100%;
-  max-width: none;
-  max-height: none;
-  min-height: 100vh;
-  border-radius: 0;
-  border: none;
-  box-shadow: none;
-}
-
-:deep(.chatbot-view__header) {
-  border-radius: 0;
-}
-</style>

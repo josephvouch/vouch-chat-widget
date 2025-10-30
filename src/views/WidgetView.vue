@@ -4,18 +4,34 @@ import ChatbotShell from '../components/chatbot/ChatbotShell.vue'
 
 <template>
   <section
-    class="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-950 px-6 py-10 text-center text-slate-100"
+    class="
+      vc3-flex
+      vc3-min-h-screen
+      vc3-flex-col
+      vc3-items-center
+      vc3-justify-center
+      vc3-gap-6
+      vc3-bg-slate-50
+      vc3-px-6
+      vc3-py-10
+      vc3-text-center
+      vc3-text-slate-900
+    "
   >
-    <header class="space-y-2">
-      <h1 class="text-3xl font-semibold">Chatbot Widget Preview</h1>
-      <p class="max-w-xl text-sm text-slate-400">
-        Use the activator in the bottom corner to open the chatbot. This route mirrors
-        the embeddable widget experience.
+    <header class="vc3-space-y-2">
+      <h1 class="vc3-text-3xl vc3-font-semibold">Chatbot Widget Preview</h1>
+      <p class="vc3-max-w-xl vc3-text-sm vc3-text-slate-600">
+        Use the activator in the bottom corner to open the chatbot. This route
+        mirrors the embeddable widget experience.
       </p>
     </header>
-    <div class="flex items-center gap-6">
-      <span class="h-3 w-3 animate-ping rounded-full bg-sky-500/40" />
-      <span class="text-xs uppercase tracking-[0.35em] text-slate-500">
+    <div class="vc3-flex vc3-items-center vc3-gap-6">
+      <span
+        class="vc3-h-3 vc3-w-3 vc3-animate-ping vc3-rounded-full vc3-bg-sky-500/40"
+      />
+      <span
+        class="vc3-text-xs vc3-uppercase vc3-tracking-[0.35em] vc3-text-slate-500"
+      >
         Ready to chat
       </span>
     </div>
