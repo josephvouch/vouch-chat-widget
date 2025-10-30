@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChatbotShell from '../components/chatbot/ChatbotShell.vue'
+import ChatbotWrapper from '../components/chatbot/ChatbotWrapper.vue'
 </script>
 
 <template>
@@ -36,5 +36,5 @@ import ChatbotShell from '../components/chatbot/ChatbotShell.vue'
       </span>
     </div>
   </section>
-  <ChatbotShell />
+  <ChatbotWrapper />
 </template>

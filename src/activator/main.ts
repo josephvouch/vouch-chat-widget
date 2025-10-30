@@ -1,13 +1,13 @@
 import { createApp, h } from 'vue'
 import { createPinia } from 'pinia'
 
-import ChatbotShell from '../components/chatbot/ChatbotShell.vue'
+import ChatbotWrapper from '../components/chatbot/ChatbotWrapper.vue'
 
 const resolveIframeURL = (): string => {
   const el = document.getElementById('app')
   const dataSrc = el?.getAttribute('data-src') ?? el?.dataset?.src
   if (dataSrc && /^https?:\/\//.test(dataSrc)) return dataSrc
-  return new URL('/bot', window.location.origin).toString()
+  return new URL('/', window.location.origin).toString()
 }
 
 const mount = (): void => {
@@ -22,11 +22,8 @@ const mount = (): void => {
   const iframeURL = resolveIframeURL()
   const app = createApp({
     render: () =>
-      h(ChatbotShell, {
-        panelMode: 'iframe',
+      h(ChatbotWrapper, {
         iframeURL,
-        useTeleport: true,
-        teleportTarget: '#app',
       }),
   })
   app.use(createPinia())

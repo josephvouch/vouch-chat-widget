@@ -2,7 +2,6 @@
 import { onBeforeUnmount, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import ChatbotPanel from '../components/chatbot/ChatbotPanel.vue'
 import ChatbotView from '../components/chatbot/ChatbotView.vue'
 import { useChatbotStore } from '../stores/chatbot'
 
@@ -19,6 +18,7 @@ onBeforeUnmount((): void => {
 
 const handleClose = (): void => {
   void store.close()
+  // Notify parent iframe to close the panel
   if (
     typeof window !== 'undefined' &&
     window.parent &&
@@ -40,9 +40,8 @@ const handleReady = (): void => {
 </script>
 
 <template>
-  <ChatbotPanel :open="isOpen" aria-label="Chat">
+  <div class="panel-view">
     <ChatbotView
-      class="vc3-pointer-events-auto vc3-flex-1"
       :open="isOpen"
       :messages="messages"
       :loading="isLoading"
@@ -50,5 +49,29 @@ const handleReady = (): void => {
       @send="handleSend"
       @ready="handleReady"
     />
-  </ChatbotPanel>
+  </div>
 </template>
+
+<style scoped>
+/**
+ * PanelView: Full-height container for iframe embedding
+ * This view is loaded inside the iframe when using panelMode='iframe'
+ * Ensures ChatbotView fills the entire iframe height
+ */
+.panel-view {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+/**
+ * Ensure ChatbotView takes full height within PanelView
+ */
+.panel-view :deep(.chatbot-view) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+</style>

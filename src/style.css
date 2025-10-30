@@ -3,6 +3,17 @@
 @tailwind utilities;
 
 @layer base {
+  /**
+   * Establish full-height chain for iframe embedding
+   * This ensures the chat widget fills the entire iframe height
+   */
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   :root {
     font-family:
       'Inter',
@@ -21,7 +32,16 @@
   }
 
   body {
-    @apply vc3-m-0 vc3-min-h-screen vc3-bg-slate-950 vc3-text-slate-100 vc3-antialiased;
+    @apply vc3-m-0 vc3-bg-slate-950 vc3-text-slate-100 vc3-antialiased vc3-overflow-clip;
+  }
+
+  /**
+   * Ensure #app takes full height for proper iframe layout
+   */
+  #app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   a {

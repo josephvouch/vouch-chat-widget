@@ -4,8 +4,7 @@ import { createPinia } from 'pinia'
 // Option A: use the app's full Tailwind + base styles for visual parity
 import '../style.css'
 
-import ChatbotShell from '../components/chatbot/ChatbotShell.vue'
-import { envConfig } from '../config/env'
+import ChatbotWrapper from '../components/chatbot/ChatbotWrapper.vue'
 
 const resolveMountTarget = (): HTMLElement => {
   const el = document.querySelector<HTMLElement>('#app')
@@ -20,14 +19,11 @@ const resolveIframeURL = (): string => {
   const appEl = document.querySelector<HTMLElement>('#app')
   const urlFromData = appEl?.getAttribute('data-src') ?? appEl?.dataset?.src
   if (urlFromData && /^https?:\/\//.test(urlFromData)) return urlFromData
-  // Build-time fallback (lets activator be configured via Vite env when no data-src provided)
-  const envUrl = envConfig.chatframeURL
-  if (envUrl && /^https?:\/\//.test(envUrl)) return envUrl
   try {
-    // Default to same-origin /bot if not provided
-    return new URL('/bot', window.location.origin).toString()
+    // Default to same-origin root (bot route is at "/")
+    return new URL('/', window.location.origin).toString()
   } catch {
-    return '/bot'
+    return '/'
   }
 }
 
@@ -36,11 +32,8 @@ const mount = (): void => {
   const iframeURL = resolveIframeURL()
   const app = createApp({
     render: () =>
-      h(ChatbotShell, {
-        panelMode: 'iframe',
+      h(ChatbotWrapper, {
         iframeURL,
-        useTeleport: true,
-        teleportTarget: '#app',
       }),
   })
   app.use(createPinia())

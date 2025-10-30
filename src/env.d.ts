@@ -10,10 +10,7 @@ declare module '*.vue' {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-interface ImportMetaEnv {
-  readonly VITE_CHATBOT_VIEW_PANEL?: string
-  readonly VITE_CHATBOT_VIEW_PANEL_IFRAME_URL?: string
-}
+interface ImportMetaEnv {}
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface ImportMeta {

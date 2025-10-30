@@ -45,11 +45,8 @@ const handleReady = (): void => {
 </script>
 
 <template>
-  <section
-    class="bot-view vc3-flex vc3-min-h-screen vc3-flex-col vc3-bg-slate-950"
-  >
+  <section class="bot-view">
     <ChatbotView
-      class="bot-view__chat vc3-flex-1"
       :open="isOpen"
       :messages="messages"
       :loading="isLoading"
@@ -61,20 +58,24 @@ const handleReady = (): void => {
 </template>
 
 <style scoped>
-:deep(.chatbot-view) {
-  position: static;
-  inset: auto;
-  margin: 0;
+/**
+ * BotView: Full-height container for standalone chat view
+ * Used when accessing the root route (/)
+ */
+.bot-view {
+  height: 100%;
   width: 100%;
-  max-width: none;
-  max-height: none;
-  min-height: 100vh;
-  border-radius: 0;
-  border: none;
-  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  background: white;
 }
 
-:deep(.chatbot-view__header) {
-  border-radius: 0;
+/**
+ * Ensure ChatbotView takes full height within BotView
+ */
+.bot-view :deep(.chatbot-view) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 </style>

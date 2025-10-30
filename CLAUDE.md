@@ -47,7 +47,7 @@ This project uses **three separate Vite configurations** to support different de
 - Bundles Vue, Pinia, and all dependencies into one file
 - Global: `ChatWidgetActivator`
 - Purpose: Embed on any website without module system
-- Mounts `ChatbotShell` component with iframe or component panel mode
+- Mounts `ChatbotWrapper` component with iframe or component panel mode
 - Configuration via `data-src` attribute on mount element or `VITE_CHATBOT_VIEW_PANEL_IFRAME_URL`
 
 ### 3. Widget View SPA (`vite.view.config.ts`)
@@ -65,7 +65,7 @@ This project uses **three separate Vite configurations** to support different de
 
 1. **Activator + Component Panel** (single-origin, no iframe):
    ```
-   ChatbotShell (manages state, teleports to body)
+   ChatbotWrapper (manages state, teleports to body)
      ├─ ChatbotButtonActivator (floating button)
      └─ ChatbotPanel (direct component mount)
          └─ ChatbotView (message list + input)
@@ -73,7 +73,7 @@ This project uses **three separate Vite configurations** to support different de
 
 2. **Activator + Iframe Panel** (cross-origin or isolated):
    ```
-   ChatbotShell (panelMode='iframe', teleports to body)
+   ChatbotWrapper (panelMode='iframe', teleports to body)
      ├─ ChatbotButtonActivator (floating button)
      └─ <iframe src="..."> → separate app instance
          └─ PanelView.vue → ChatbotPanel → ChatbotView
@@ -97,7 +97,7 @@ This project uses **three separate Vite configurations** to support different de
 - Global keyboard shortcut: `Ctrl+Shift+L` to toggle widget
 - Returns: `{ store, setActivator, restoreFocus }`
 - Saves `lastFocusedEl` before opening, restores on close
-- Used by `ChatbotShell` and `ChatbotView`
+- Used by `ChatbotWrapper` and `ChatbotView`
 
 ### Environment Configuration
 
