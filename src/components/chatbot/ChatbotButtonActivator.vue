@@ -20,9 +20,11 @@
         hover:vc3--translate-y-0.5
       "
       :class="[
-        open
-          ? 'vc3-bg-sky-600 vc3-text-white hover:vc3-bg-sky-500'
-          : 'vc3-bg-white vc3-text-sky-600 hover:vc3-bg-sky-50',
+        hasIconURL
+          ? 'vc3-bg-transparent vc3-overflow-hidden'
+          : open
+            ? 'vc3-bg-sky-600 vc3-text-white hover:vc3-bg-sky-500'
+            : 'vc3-bg-white vc3-text-sky-600 hover:vc3-bg-sky-50',
         reducedMotion
           ? 'vc3-transition-none'
           : 'vc3-transition vc3-duration-200 vc3-ease-out',
@@ -35,7 +37,16 @@
       @keydown.enter.prevent="handleKeyToggle"
     >
       <slot name="icon">
+        <!-- Show image if iconURL is provided -->
+        <img
+          v-if="hasIconURL"
+          :src="currentIconURL"
+          :alt="open ? 'Close chat icon' : 'Open chat icon'"
+          class="vc3-absolute vc3-inset-0 vc3-h-full vc3-w-full vc3-object-cover"
+        >
+        <!-- Show default SVG icon as fallback -->
         <svg
+          v-else
           aria-hidden="true"
           class="vc3-h-6 vc3-w-6"
           fill="none"
@@ -66,6 +77,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+
+import { useWidgetStylesStore } from '../../stores/widget-styles'
 
 const props = defineProps({
   open: {
@@ -105,6 +118,9 @@ const emit = defineEmits<{
   (event: 'toggle'): void
 }>()
 
+const widgetStylesStore = useWidgetStylesStore()
+const launcherStyles = computed(() => widgetStylesStore.getLauncherStyles)
+
 const buttonEl = ref<HTMLButtonElement | null>(null)
 const reducedMotion =
   typeof window !== 'undefined' &&
@@ -116,6 +132,17 @@ const buttonLabel = computed<string>(() => {
     return `Open chat, ${props.unreadCount} new messages`
   }
   return props.label
+})
+
+const currentIconURL = computed<string>(() => {
+  if (props.open) {
+    return launcherStyles.value.closeIconURL
+  }
+  return launcherStyles.value.openIconURL
+})
+
+const hasIconURL = computed<boolean>(() => {
+  return Boolean(currentIconURL.value)
 })
 
 const positionStyle = computed<Record<string, string>>(() => ({

@@ -90,6 +90,154 @@ This project uses **three separate Vite configurations** to support different de
 - Actions: `open()`, `close()`, `toggle()`, `sendMessage(text)`, `hydrate()`
 - Persistence: Messages auto-persist to `localStorage` under `vouch-chatbot-dev-history` key
 
+**Store: `useUsersStore`** (`src/stores/users.ts`)
+- `customerId`: Customer ID from registration (persisted to localStorage)
+- `isRegistered`: Boolean flag for registration status
+- Actions: `setCustomerId(id)`, `clearCustomerId()`, `hydrate()`
+- Persistence: Uses `localStorage` key `vouch-chatbot-customer-id`
+
+### Services Architecture
+
+The `services/` folder follows a structured pattern for API integration, business logic, and utilities:
+
+```
+src/services/
+├── apis/                      # API service modules
+│   └── core/                  # Core Service API
+│       ├── index.ts           # Axios instance with interceptors
+│       ├── types.ts           # TypeScript types for all APIs
+│       ├── messaging-module.ts
+│       ├── register-module.ts
+│       └── widget-styles-module.ts
+├── handlers/                  # Business logic handlers
+│   └── register-handler.ts
+└── chatbot/                   # Legacy mock service
+    └── mockService.ts
+```
+
+#### API Services Pattern (`services/apis/core/`)
+
+**Architecture Principles:**
+1. **Modular**: Each API domain has its own module file (e.g., `messaging-module.ts`)
+2. **Typed**: All requests/responses have TypeScript interfaces in `types.ts`
+3. **Centralized**: Single Axios instance in `index.ts` with shared configuration
+4. **Constants**: Each module uses `API_PATHS` constants for endpoint URLs
+
+**Core API Client** (`services/apis/core/index.ts`):
+- Axios instance configured with base URL from `envConfig.coreServiceHost`
+- Request interceptor for authentication (JWT token injection - TODO)
+- Response interceptor for error handling and logging
+- Helper functions: `extractApiData()`, `handleApiError()`
+- Default timeout: 30 seconds
+
+**Available Modules:**
+
+1. **Messaging Module** (`messaging-module.ts`):
+   - Base path: `/api/v1/widget/messages`
+   - `retrieveLastMessages(params?)`: GET messages with optional limit (default 20)
+   - `sendMessage(data)`: POST message with text and msgType
+
+2. **Register Module** (`register-module.ts`):
+   - Base path: `/api/v1/widget/registers`
+   - `register(data)`: POST registration with customerGeneratedCode and customerTimezone
+
+3. **Widget Styles Module** (`widget-styles-module.ts`):
+   - Base path: `/api/v1/widget/styles`
+   - `getStyles()`: GET widget styling configuration (header, fonts, launcher, conversation, input, etc.)
+
+**Adding a New API Module:**
+1. Create `services/apis/core/[module-name]-module.ts`
+2. Define `API_PATHS` constant at the top
+3. Add TypeScript types to `services/apis/core/types.ts`
+4. Export module object with async methods
+5. Use `coreServiceApi` from `./index` for HTTP calls
+6. Handle errors with `handleApiError()`
+
+**Example Module Structure:**
+```typescript
+const API_PATHS = {
+  BASE: '/api/v1/widget/example',
+} as const
+
+export const exampleModule = {
+  getData: async (): Promise<IExampleResponse> => {
+    try {
+      const response: AxiosResponse<IExampleResponse> =
+        await coreServiceApi.get(API_PATHS.BASE)
+      return response.data
+    } catch (error) {
+      const apiError = handleApiError(error)
+      throw apiError
+    }
+  },
+}
+```
+
+#### Handlers Pattern (`services/handlers/`)
+
+**Purpose**: Handlers encapsulate business logic, orchestrate API calls, and manage application state.
+
+**Naming Convention**: `[feature]-handler.ts` (e.g., `register-handler.ts`)
+
+**Handler Responsibilities:**
+1. Orchestrate multiple API calls
+2. Transform/prepare data for APIs
+3. Update Pinia stores with results
+4. Call utility functions
+5. Handle complex business logic
+6. Return simplified success/failure states
+
+**Example: User Register Handler** (`register-handler.ts`):
+```typescript
+export async function doUserRegister(): Promise<boolean> {
+  try {
+    // 1. Generate customer code
+    const customerGeneratedCode = generateCustomerCode()
+
+    // 2. Get user timezone
+    const customerTimezone = getUserTimezoneOffset()
+
+    // 3. Call API
+    const response = await registerModule.register({
+      customerGeneratedCode,
+      customerTimezone,
+    })
+
+    // 4. Update store
+    const usersStore = useUsersStore()
+    usersStore.setCustomerId(response.data.customerId)
+
+    // 5. Return success
+    return true
+  } catch (error) {
+    console.error('[register-handler] Failed:', error)
+    return false
+  }
+}
+```
+
+**When to Create a Handler:**
+- Complex multi-step workflows
+- Logic that spans multiple API calls
+- Operations that update multiple stores
+- Reusable business logic across components
+
+#### Utility Functions (`src/utils/`)
+
+**String Utils** (`utils/util-string.ts`):
+- `generateRandomString(length)`: Generate random alphanumeric string
+- `generateCustomerCode()`: Generate 16-character customer code
+
+**Timezone Utils** (`utils/util-timezone.ts`):
+- `getUserTimezoneOffset()`: Get user's timezone offset in hours (e.g., 7 for UTC+7)
+- `getUserTimezoneName()`: Get timezone name (e.g., "Asia/Bangkok")
+
+**Adding New Utils:**
+1. Create `utils/util-[category].ts` for related functions
+2. Export pure functions with explicit return types
+3. Add JSDoc comments for documentation
+4. Keep functions small and focused
+
 ### Composables
 
 **`useChatbotWidget`** (`src/composables/useChatbotWidget.ts`)
@@ -103,11 +251,10 @@ This project uses **three separate Vite configurations** to support different de
 
 **`src/config/env.ts`** - Centralized environment handling:
 - `envConfig.isDev`: Development mode flag
-- `envConfig.chatbotViewPanel`: `'iframe'` or `'component'` (default)
-- `envConfig.chatframeURL`: URL for iframe panel mode
+- `envConfig.coreServiceHost`: Core Service API base URL (default: `http://localhost:3501`)
 - Environment variables:
-  - `VITE_CHATBOT_VIEW_PANEL` / `CHATBOT_VIEW_PANEL` → panel mode
-  - `VITE_CHATBOT_VIEW_PANEL_IFRAME_URL` / `CHATBOT_VIEW_PANEL_IFRAME_URL` → iframe URL
+  - `VITE_CORE_SERVICE_HOST` → Core Service API host URL
+  - `VITE_CHATBOT_VIEW_PANEL_IFRAME_URL` → iframe panel URL
 
 ### Routing
 
@@ -153,12 +300,16 @@ pnpm lint --fix        # Auto-fix issues
 
 ## Integration with AVA Backend
 
-This widget is designed to integrate with the AVA chatbot backend services:
+This widget integrates with the AVA chatbot backend services:
 
-- **Backend API**: Expects integration with `web-be-botbuilder-bot-process` service
+- **Core Service API**: Base URL configured via `VITE_CORE_SERVICE_HOST` (default: `http://localhost:3501`)
+- **Available APIs**:
+  - User registration (`/api/v1/widget/registers`)
+  - Message retrieval and sending (`/api/v1/widget/messages`)
+  - Widget styles configuration (`/api/v1/widget/styles`)
+- **Authentication**: JWT token injection ready (TODO: implement token management)
 - **Message Format**: See `src/types/chatbot.ts` for `ChatbotMessage` interface
-- **Future Work**: Replace `mockService.ts` with real API calls to chatbot backend
-- **Multi-tenancy**: Widget will be scoped by merchant/property ID (configuration TBD)
+- **Multi-tenancy**: Widget scoped by customer ID from registration
 
 ## Embedding the Widget
 
@@ -201,8 +352,13 @@ python3 -m http.server 8000 # Serve activator bundle
 
 - **Components**: PascalCase (e.g., `ChatbotPanel.vue`)
 - **Composables**: camelCase with `use` prefix (e.g., `useChatbotWidget`)
-- **Types/Interfaces**: PascalCase with `I` prefix for interfaces (e.g., `IChatbotWidgetHook`)
-- **Constants**: SCREAMING_SNAKE_CASE (e.g., `GLOBAL_SHORTCUT`)
+- **Stores**: camelCase with `use` prefix (e.g., `useUsersStore`)
+- **Handlers**: kebab-case with `-handler` suffix (e.g., `register-handler.ts`)
+- **API Modules**: kebab-case with `-module` suffix (e.g., `messaging-module.ts`)
+- **Utils**: kebab-case with `util-` prefix (e.g., `util-string.ts`)
+- **Functions**: camelCase with descriptive verbs (e.g., `doUserRegister`, `generateCustomerCode`)
+- **Types/Interfaces**: PascalCase with `I` prefix for interfaces (e.g., `IRegisterWidgetRequest`)
+- **Constants**: SCREAMING_SNAKE_CASE (e.g., `API_PATHS`, `STORAGE_KEY`)
 - **Indentation**: 2 spaces
 - **Styling**: Tailwind utility classes preferred, scoped styles when needed
 - **Imports**: Auto-sorted by ESLint (Vue → external → internal → relative)
@@ -210,15 +366,17 @@ python3 -m http.server 8000 # Serve activator bundle
 ## Known Limitations & Future Work
 
 1. **No Automated Tests**: Test suite not yet configured (see README.md "Next Steps")
-2. **Mock Data Only**: Currently uses simulated API responses
-3. **No Real-time Updates**: WebSocket integration pending
+2. **Authentication Pending**: JWT token injection in API interceptor needs implementation
+3. **No Real-time Updates**: WebSocket integration pending for live message updates
 4. **No Multi-language**: i18n not yet implemented (AVA uses i18next in other services)
 5. **No Analytics**: Smartlook/tracking not yet integrated
 6. **No Error Boundary**: Need graceful degradation for API failures
+7. **Chatbot Mock Service**: `mockService.ts` needs replacement with real message API integration
 
 ## Local Storage Keys
 
 - `vouch-chatbot-dev-history`: Persisted chat messages (JSON array of `ChatbotMessage`)
+- `vouch-chatbot-customer-id`: Customer ID from user registration (managed by `useUsersStore`)
 - Future: May need merchant/session scoping for multi-tenant deployments
 
 ## Troubleshooting
