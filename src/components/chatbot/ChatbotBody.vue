@@ -19,7 +19,6 @@ import { computed, ref } from 'vue'
 
 import type { IMessage } from '../../services/apis/core/types'
 import { useWidgetStylesStore } from '../../stores/widget-styles'
-
 import MessageBubble from './MessageBubble.vue'
 
 // Mock messages data for development

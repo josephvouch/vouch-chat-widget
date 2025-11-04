@@ -12,7 +12,7 @@ import type { IGetWidgetStylesResponse } from './types'
  * API Path Constants
  */
 const API_PATHS = {
-  BASE: '/api/v1/widget/styles',
+  BASE: '/api/v3/widget/styles',
 } as const
 
 /**

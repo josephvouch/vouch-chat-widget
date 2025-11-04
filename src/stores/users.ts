@@ -6,10 +6,32 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
+/**
+ * Global widget API key (set before Pinia initialization)
+ */
+let globalWidgetApiKey = ''
+
+/**
+ * Set the global widget API key
+ * Must be called before creating the Pinia store
+ */
+export function setWidgetApiKeyGlobal(apiKey: string): void {
+  globalWidgetApiKey = apiKey
+}
+
+/**
+ * Get the persistence key based on widget API key
+ * API key is required and validated in main.ts before store initialization
+ */
+function getPersistenceKey(): string {
+  return `${globalWidgetApiKey}__vc_data`
+}
+
 export const useUsersStore = defineStore(
   'users',
   () => {
     const customerId = ref<string | null>(null)
+    const widgetApiKey = ref<string>(globalWidgetApiKey)
 
     const isRegistered = computed<boolean>(() => customerId.value !== null)
 
@@ -30,6 +52,7 @@ export const useUsersStore = defineStore(
 
     return {
       customerId,
+      widgetApiKey,
       isRegistered,
       setCustomerId,
       clearCustomerId,
@@ -37,7 +60,7 @@ export const useUsersStore = defineStore(
   },
   {
     persist: {
-      key: 'vouch-data-users',
+      key: getPersistenceKey(),
     },
   },
 )

@@ -15,8 +15,7 @@ import type {
   IWidgetStylesData,
 } from '../services/apis/core/types'
 
-// Mock data for development
-const MOCK_HEADER_STYLES: IHeaderStyles = {
+const createDefaultHeaderStyles = (): IHeaderStyles => ({
   bgColor: '#0D47A1',
   textColor: '#ffffff',
   title: 'Mercure ICON',
@@ -24,19 +23,19 @@ const MOCK_HEADER_STYLES: IHeaderStyles = {
   titleSize: 22.4,
   font: 'Maven+Pro',
   closeIconColor: '#ffffff',
-}
+})
 
-const MOCK_FONTS_STYLES: IFontsStyles = {
+const createDefaultFontsStyles = (): IFontsStyles => ({
   body: 'Hind',
-}
+})
 
-const MOCK_LAUNCHER_STYLES: ILauncherStyles = {
+const createDefaultLauncherStyles = (): ILauncherStyles => ({
   openIconURL:
     'https://s3.ap-southeast-1.amazonaws.com/files.vouch.sg/0_housekeeping/65f7bb5d421b09001a52b86e/17147332864296511.jpg',
   closeIconURL: 'https://placehold.co/120x120?text=Close',
-}
+})
 
-const MOCK_CONVERSATION_STYLES: IConversationStyles = {
+const createDefaultConversationStyles = (): IConversationStyles => ({
   avatarUrl:
     'https://s3.ap-southeast-1.amazonaws.com/files.vouch.sg/0_housekeeping/65f7bb5d421b09001a52b86e/17147332864296511.jpg',
   backgroundColor: '#F9F9F9',
@@ -49,9 +48,9 @@ const MOCK_CONVERSATION_STYLES: IConversationStyles = {
     bgColor: '#0D47A1',
     textColor: '#ffffff',
   },
-}
+})
 
-const MOCK_INPUT_STYLES: IInputStyles = {
+const createDefaultInputStyles = (): IInputStyles => ({
   bgColor: '#ffffff',
   textColor: '#131e2e',
   attachmentButton: {
@@ -65,18 +64,18 @@ const MOCK_INPUT_STYLES: IInputStyles = {
     iconUrl: '',
     text: 'Send',
   },
-}
+})
 
 export const useWidgetStylesStore = defineStore('widget-styles', () => {
   // State - will be populated from API in the future
   const styles = ref<IWidgetStylesData | null>(null)
 
-  // For now, use mock styles
-  const headerStyles = ref<IHeaderStyles>(MOCK_HEADER_STYLES)
-  const fontsStyles = ref<IFontsStyles>(MOCK_FONTS_STYLES)
-  const launcherStyles = ref<ILauncherStyles>(MOCK_LAUNCHER_STYLES)
-  const conversationStyles = ref<IConversationStyles>(MOCK_CONVERSATION_STYLES)
-  const inputStyles = ref<IInputStyles>(MOCK_INPUT_STYLES)
+  // Default styles fallback until API wiring is complete
+  const headerStyles = ref<IHeaderStyles>(createDefaultHeaderStyles())
+  const fontsStyles = ref<IFontsStyles>(createDefaultFontsStyles())
+  const launcherStyles = ref<ILauncherStyles>(createDefaultLauncherStyles())
+  const conversationStyles = ref<IConversationStyles>(createDefaultConversationStyles())
+  const inputStyles = ref<IInputStyles>(createDefaultInputStyles())
 
   // Getters
   const getHeaderStyles = computed<IHeaderStyles>(() => {
@@ -84,7 +83,7 @@ export const useWidgetStylesStore = defineStore('widget-styles', () => {
     if (styles.value?.header) {
       return styles.value.header
     }
-    // Otherwise, use mock header styles
+    // Otherwise, use the local default header styles
     return headerStyles.value
   })
 
@@ -130,11 +129,11 @@ export const useWidgetStylesStore = defineStore('widget-styles', () => {
    */
   const clearStyles = (): void => {
     styles.value = null
-    headerStyles.value = MOCK_HEADER_STYLES
-    fontsStyles.value = MOCK_FONTS_STYLES
-    launcherStyles.value = MOCK_LAUNCHER_STYLES
-    conversationStyles.value = MOCK_CONVERSATION_STYLES
-    inputStyles.value = MOCK_INPUT_STYLES
+    headerStyles.value = createDefaultHeaderStyles()
+    fontsStyles.value = createDefaultFontsStyles()
+    launcherStyles.value = createDefaultLauncherStyles()
+    conversationStyles.value = createDefaultConversationStyles()
+    inputStyles.value = createDefaultInputStyles()
   }
 
   return {

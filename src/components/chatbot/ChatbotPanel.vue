@@ -1,8 +1,12 @@
 <template>
   <div
-    v-show="open"
+    v-show="isVisible"
     ref="panelEl"
     class="vc-widget-panel vc3-pointer-events-auto vc3-bg-white vc3-shadow-2xl"
+    :class="{
+      'vc-widget-panel--opening': open && isAnimating,
+      'vc-widget-panel--closing': !open && isAnimating,
+    }"
     :style="{ zIndex }"
     role="dialog"
     aria-modal="true"
@@ -23,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 // no store usage in iframe-only mode
 
 const props = defineProps({
@@ -51,6 +55,8 @@ const emit = defineEmits<{
 }>()
 
 const panelEl = ref<HTMLDivElement | null>(null)
+const isAnimating = ref(false)
+const isVisible = ref(false)
 let resizeObserver: ResizeObserver | null = null
 
 const resolvedIframeUrl = computed<string>(() => {
@@ -64,7 +70,28 @@ const emitClose = (): void => {
   emit('close')
 }
 
-//
+// Watch for open prop changes to handle animations
+watch(
+  () => props.open,
+  (newOpen: boolean) => {
+    if (newOpen) {
+      // Opening: show immediately and trigger enter animation
+      isVisible.value = true
+      isAnimating.value = true
+      setTimeout(() => {
+        isAnimating.value = false
+      }, 300)
+    } else {
+      // Closing: trigger exit animation, then hide after animation completes
+      isAnimating.value = true
+      setTimeout(() => {
+        isVisible.value = false
+        isAnimating.value = false
+      }, 200)
+    }
+  },
+  { immediate: true },
+)
 
 onMounted((): void => {
   const el = panelEl.value
@@ -102,5 +129,40 @@ onUnmounted((): void => {
   min-height: 0;
   overflow: hidden;
   border-radius: 1.5rem;
+  transform-origin: bottom right;
+}
+
+/* Opening animation - scale up + fade in */
+.vc-widget-panel--opening {
+  animation: panelOpen 300ms ease-out forwards;
+}
+
+/* Closing animation - scale down + fade out */
+.vc-widget-panel--closing {
+  animation: panelClose 200ms ease-in forwards;
+}
+
+/* Keyframes: Panel opening animation */
+@keyframes panelOpen {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Keyframes: Panel closing animation */
+@keyframes panelClose {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
 }
 </style>

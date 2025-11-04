@@ -3,11 +3,11 @@
  * Handles user registration logic and API calls
  */
 
-import { registerModule } from '../apis/core/register-module'
-import type { IRegisterWidgetRequest } from '../apis/core/types'
 import { useUsersStore } from '../../stores/users'
 import { generateCustomerCode } from '../../utils/util-string'
 import { getUserTimezoneOffset } from '../../utils/util-timezone'
+import { registerModule } from '../apis/core/register-module'
+import type { IRegisterWidgetRequest } from '../apis/core/types'
 
 /**
  * Register user with the chat widget

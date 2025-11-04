@@ -6,15 +6,15 @@
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios'
 import axios from 'axios'
 
-import { envConfig } from '../../config/env'
-
+import { CORE_SERVICE_HOST, IS_DEV } from '../../../config/constants'
+import { useUsersStore } from '../../../stores/users'
 import type { IApiError, IApiResponse } from './types'
 
 /**
  * Create axios instance with base configuration
  */
 const coreServiceApi: AxiosInstance = axios.create({
-  baseURL: envConfig.coreServiceHost,
+  baseURL: CORE_SERVICE_HOST,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -23,28 +23,39 @@ const coreServiceApi: AxiosInstance = axios.create({
 
 /**
  * Request interceptor for authentication
- * TODO: Implement JWT token injection from AVA auth system
+ * Adds widget API key to all requests
  */
 coreServiceApi.interceptors.request.use(
   (config) => {
-    // TODO: Add authentication token to headers
+    // Add widget API key to headers
+    const usersStore = useUsersStore()
+    const { widgetApiKey } = usersStore
+
+    if (widgetApiKey) {
+      config.headers['x-widget-key'] = widgetApiKey
+    }
+
+    // TODO: Add JWT token for user authentication if needed
     // const token = getAuthToken() // Implement this based on AVA auth system
     // if (token) {
     //   config.headers.Authorization = `Bearer ${token}`
     // }
 
-    if (envConfig.isDev) {
+    if (IS_DEV) {
       console.info('[Core Service API] Request:', {
         method: config.method?.toUpperCase(),
         url: config.url,
         data: config.data,
+        headers: {
+          'x-widget-key': widgetApiKey ? '***' : 'not set',
+        },
       })
     }
 
     return config
   },
   (error: AxiosError) => {
-    if (envConfig.isDev) {
+    if (IS_DEV) {
       console.error('[Core Service API] Request error:', error)
     }
     return Promise.reject(error)
@@ -56,7 +67,7 @@ coreServiceApi.interceptors.request.use(
  */
 coreServiceApi.interceptors.response.use(
   (response: AxiosResponse) => {
-    if (envConfig.isDev) {
+    if (IS_DEV) {
       console.info('[Core Service API] Response:', {
         status: response.status,
         url: response.config.url,
@@ -66,7 +77,7 @@ coreServiceApi.interceptors.response.use(
     return response
   },
   (error: AxiosError<IApiError>) => {
-    if (envConfig.isDev) {
+    if (IS_DEV) {
       console.error('[Core Service API] Response error:', {
         status: error.response?.status,
         url: error.config?.url,
