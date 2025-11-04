@@ -45,6 +45,7 @@ const mockMessages = ref<IMessage[]>([
     _id: '3',
     fromMe: false,
     msgType: 'text',
+    // eslint-disable-next-line max-len
     text: 'Our standard check-in time is 3:00 PM and check-out is at 12:00 PM. Early check-in and late check-out are subject to availability.',
     senderBy: 'Bot',
     channel: 'Web',

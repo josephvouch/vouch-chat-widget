@@ -27,6 +27,7 @@ import ChatbotBody from './ChatbotBody.vue'
 import ChatbotFooter from './ChatbotFooter.vue'
 import ChatbotHeader from './ChatbotHeader.vue'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps({
   open: {
     type: Boolean,
