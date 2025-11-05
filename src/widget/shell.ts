@@ -1,10 +1,9 @@
 import { createApp, h } from 'vue'
+import ChatbotWrapper from '@modules/button-activator/view/ChatbotWrapper.vue'
 import { createPinia } from 'pinia'
 
 // Option A: use the app's full Tailwind + base styles for visual parity
 import '../style.css'
-
-import ChatbotWrapper from '../components/chatbot/ChatbotWrapper.vue'
 
 const resolveMountTarget = (): HTMLElement => {
   const el = document.querySelector<HTMLElement>('#app')

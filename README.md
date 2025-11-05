@@ -19,6 +19,16 @@ Run `pnpm dev` and open the default route to see the floating Chatbot Button Act
 | `pnpm build` | Produces a production build. |
 | `pnpm lint`  | Executes ESLint + Prettier.  |
 
+## Architecture
+
+The widget codebase is modularised under `src/modules` so the launcher and the chat surface evolve independently.
+
+- `src/modules/button-activator` exposes the floating launcher (`components`), supporting logic in `composeables`, and the wrapper/preview entry in `view`.
+- `src/modules/chatbot-view` contains the iframe-friendly chat surface (`components`) and its route-facing screens in `views`.
+- `src/routes` aggregates module-level route definitions via `button-activator.routes.ts` and `chatbot-view.routes.ts`.
+
+Shared systems (stores, services, config, utils, types) continue to live at the root of `src`. Vite, TypeScript, and ESLint understand the aliases `@/*` → `src/*` and `@modules/*` → `src/modules/*` for clean cross-module imports.
+
 ## Next Steps
 
 - Extract a loader build that mounts only the activator and manages an iframe boundary.

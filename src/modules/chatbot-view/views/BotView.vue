@@ -3,8 +3,9 @@ import { onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
-import ChatbotView from '../components/chatbot/ChatbotView.vue'
-import { useChatbotStore } from '../stores/chatbot'
+import { useChatbotStore } from '@/stores/chatbot'
+
+import ChatbotView from '../components/ChatbotView.vue'
 
 const router = useRouter()
 const store = useChatbotStore()

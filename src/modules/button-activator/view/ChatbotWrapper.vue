@@ -34,11 +34,10 @@ import {
   toRefs,
   watch,
 } from 'vue'
+import ChatbotButtonActivator from '@modules/button-activator/components/ChatbotButtonActivator.vue'
+import { useChatbotWidget } from '@modules/button-activator/composeables/useChatbotWidget'
+import ChatbotPanel from '@modules/chatbot-view/components/ChatbotPanel.vue'
 import { storeToRefs } from 'pinia'
-
-import { useChatbotWidget } from '../../composables/useChatbotWidget'
-import ChatbotButtonActivator from './ChatbotButtonActivator.vue'
-import ChatbotPanel from './ChatbotPanel.vue'
 
 const props = defineProps({
   position: {

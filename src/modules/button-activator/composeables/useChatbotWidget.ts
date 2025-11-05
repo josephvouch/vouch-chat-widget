@@ -1,7 +1,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useChatbotStore } from '../stores/chatbot'
+import { useChatbotStore } from '@/stores/chatbot'
 
 const GLOBAL_SHORTCUT: Readonly<{
   key: string

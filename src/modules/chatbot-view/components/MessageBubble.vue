@@ -48,8 +48,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import type { IMessage } from '../../services/apis/core/types'
-import { useWidgetStylesStore } from '../../stores/widget-styles'
+import type { IMessage } from '@/services/apis/core/types'
+import { useWidgetStylesStore } from '@/stores/widget-styles'
 
 interface IProps {
   message: IMessage

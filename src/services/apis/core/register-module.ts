@@ -12,7 +12,7 @@ import type { IRegisterWidgetRequest, IRegisterWidgetResponse } from './types'
  * API Path Constants
  */
 const API_PATHS = {
-  REGISTERS: '/api/v1/widget/registers',
+  REGISTERS: '/api/v3/widget/registers',
 } as const
 
 /**

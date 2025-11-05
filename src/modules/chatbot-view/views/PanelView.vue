@@ -2,8 +2,9 @@
 import { onBeforeUnmount, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import ChatbotView from '../components/chatbot/ChatbotView.vue'
-import { useChatbotStore } from '../stores/chatbot'
+import { useChatbotStore } from '@/stores/chatbot'
+
+import ChatbotView from '../components/ChatbotView.vue'
 
 const store = useChatbotStore()
 const { isOpen, messages, isLoading } = storeToRefs(store)

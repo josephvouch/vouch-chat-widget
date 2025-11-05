@@ -103,9 +103,9 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 
-import IconAttachment from '../../assets/icon-attachment.vue'
-import IconSend from '../../assets/icon-send.vue'
-import { useWidgetStylesStore } from '../../stores/widget-styles'
+import IconAttachment from '@/assets/icon-attachment.vue'
+import IconSend from '@/assets/icon-send.vue'
+import { useWidgetStylesStore } from '@/stores/widget-styles'
 
 interface IProps {
   open: boolean
@@ -170,7 +170,7 @@ const handleSubmit = (): void => {
 
 const handleAttachment = (): void => {
   // TODO: Implement attachment functionality
-  console.info('[ChatbotFooter] Attachment clicked')
+  console.info('[ChatbotFooterInput] Attachment clicked')
 }
 
 watch(

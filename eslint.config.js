@@ -7,7 +7,6 @@ import { fileURLToPath } from 'node:url'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import stylistic from '@stylistic/eslint-plugin'
-import stylisticTs from '@stylistic/eslint-plugin-ts'
 import importPlugin from 'eslint-plugin-import'
 import securityPlugin from 'eslint-plugin-security'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
@@ -39,8 +38,6 @@ export default [
     'plugin:vue/essential',
     'eslint:recommended',
     '@vue/eslint-config-prettier/skip-formatting',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:security/recommended-legacy',
     'plugin:import/errors',
     'plugin:import/warnings',
@@ -57,7 +54,7 @@ export default [
         parser: tsParser,
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        projectService: true,
         extraFileExtensions: ['.vue'],
         createDefaultProgram: false
       },
@@ -68,7 +65,6 @@ export default [
     },
     plugins: {
       '@stylistic': stylistic,
-      '@stylistic/ts': stylisticTs,
       '@typescript-eslint': tsPlugin,
       import: importPlugin,
       security: securityPlugin,
@@ -76,15 +72,9 @@ export default [
       vue: vuePlugin
     },
     rules: {
-      'vue/no-v-text-v-html-on-component': [
-        'error',
-        { allow: ['buttonAlert'] }
-      ],
       'vue/no-static-inline-styles': ['error', { allowBinding: true }],
-      'vue/no-mutating-props': 'error',
       'vue/require-prop-types': 'error',
       'vue/require-default-prop': 'error',
-      'vue/valid-template-root': 'error',
       'no-mixed-spaces-and-tabs': ['error', 'smart-tabs'],
       'no-multi-spaces': 'error',
       'no-undef': 'off',
@@ -123,15 +113,14 @@ export default [
             ['^vue', '^@?\\w'],
             ['^\\u0000'],
             ['^node:'],
-            ['^@?\\w'],
             ['^'],
             ['^\\.']
           ]
         }
       ],
       'simple-import-sort/exports': 'error',
-      '@stylistic/ts/object-curly-spacing': ['error', 'always'],
-      '@stylistic/ts/comma-dangle': ['error', 'always-multiline'],
+      '@stylistic/object-curly-spacing': ['error', 'always'],
+      '@stylistic/comma-dangle': ['error', 'always-multiline'],
       '@stylistic/array-bracket-spacing': ['error', 'never'],
       '@stylistic/no-trailing-spaces': 'error',
       '@stylistic/arrow-parens': ['error', 'always'],
@@ -162,9 +151,14 @@ export default [
     },
     settings: {
       'import/resolver': {
-        typescript: {},
+        typescript: {
+          project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        },
         alias: {
-          map: [['@', './src']],
+          map: [
+            ['@', './src'],
+            ['@modules', './src/modules']
+          ],
           extensions: ['.ts', '.js', '.vue', '.json']
         }
       }

@@ -10,10 +10,17 @@
     />
 
     <!-- Scrollable Body -->
-    <ChatbotBody />
+    <ChatbotBodyWelcome v-if="showWelcome" />
+    <ChatbotBodyMessage v-else />
 
     <!-- Fixed Footer -->
-    <ChatbotFooter
+    <ChatbotFooterWelcome
+      v-if="showWelcome"
+      :loading="isRegistering"
+      @cta-click="handleCtaClick"
+    />
+    <ChatbotFooterInput
+      v-else
       :open="open"
       @send="handleSend"
     />
@@ -21,11 +28,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 
-import ChatbotBody from './ChatbotBody.vue'
-import ChatbotFooter from './ChatbotFooter.vue'
-import ChatbotHeader from './ChatbotHeader.vue'
+import { doUserRegister } from '@/services/handlers/register-handler'
+import { useUsersStore } from '@/stores/users'
+import { initializeRecaptcha } from '@/utils/util-recaptcha'
+
+import ChatbotBodyMessage from './chat/ChatbotBodyMessage.vue'
+import ChatbotFooterInput from './chat/ChatbotFooterInput.vue'
+import ChatbotHeader from './chat/ChatbotHeader.vue'
+import ChatbotBodyWelcome from './chat/welcome-screen/ChatbotBodyWelcome.vue'
+import ChatbotFooterWelcome from './chat/welcome-screen/ChatbotFooterWelcome.vue'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps({
@@ -39,7 +53,14 @@ const emit = defineEmits<{
   (event: 'close'): void
   (event: 'send', payload: { text: string }): void
   (event: 'ready'): void
+  (event: 'cta-click'): void
 }>()
+
+const usersStore = useUsersStore()
+const { isRegistered } = storeToRefs(usersStore)
+const isRegistering = ref(false)
+
+initializeRecaptcha()
 
 const titleId = `chatbot-view-title-${Math.random().toString(36).slice(2)}`
 
@@ -51,9 +72,26 @@ const handleSend = (payload: { text: string }): void => {
   emit('send', payload)
 }
 
+const showWelcome = computed<boolean>(() => !isRegistered.value)
+
 onMounted((): void => {
+  initializeRecaptcha()
   emit('ready')
 })
+
+const handleCtaClick = async (): Promise<void> => {
+  if (isRegistering.value) return
+
+  isRegistering.value = true
+  const success = await doUserRegister()
+  isRegistering.value = false
+
+  if (success) {
+    emit('cta-click')
+  } else {
+    console.error('[ChatbotView] Failed to register user from welcome CTA')
+  }
+}
 </script>
 
 <style scoped>

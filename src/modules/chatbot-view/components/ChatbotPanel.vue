@@ -59,11 +59,29 @@ const isAnimating = ref(false)
 const isVisible = ref(false)
 let resizeObserver: ResizeObserver | null = null
 
+const appendFromIframeParam = (value: string): string => {
+  const hasWindow = typeof window !== 'undefined'
+  try {
+    if (!hasWindow) throw new Error('window is undefined')
+    const url = new URL(value, window.location.href)
+    url.searchParams.set('fromIframe', '1')
+    return url.toString()
+  } catch {
+    const [path = '', hash = ''] = value.split('#', 2)
+    const separator = path.includes('?') ? '&' : '?'
+    const hashSuffix = hash ? `#${hash}` : ''
+    return `${path}${separator}fromIframe=1${hashSuffix}`
+  }
+}
+
 const resolvedIframeUrl = computed<string>(() => {
-  if (props.iframeUrl && props.iframeUrl.length > 0) return props.iframeUrl
-  if (typeof window === 'undefined') return '/'
-  // Default to current origin + bot route at '/'
-  return new URL('/', window.location.origin).toString()
+  const baseUrl =
+    props.iframeUrl && props.iframeUrl.length > 0
+      ? props.iframeUrl
+      : typeof window === 'undefined'
+        ? '/'
+        : new URL('/', window.location.origin).toString()
+  return appendFromIframeParam(baseUrl)
 })
 
 const emitClose = (): void => {

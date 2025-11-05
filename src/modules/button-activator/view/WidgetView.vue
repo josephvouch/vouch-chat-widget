@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChatbotWrapper from '../components/chatbot/ChatbotWrapper.vue'
+import ChatbotWrapper from '@modules/button-activator/view/ChatbotWrapper.vue'
 </script>
 
 <template>

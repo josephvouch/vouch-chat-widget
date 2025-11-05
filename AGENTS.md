@@ -2,9 +2,12 @@
 
 ## Project Structure & Module Organization
 - Frontend lives in `src/`; `src/main.ts` boots Vue, Pinia, and the router, with `src/App.vue` as the app shell.
-- Routes: `src/router/index.ts`. Stores: `src/stores/`. Pages: `src/views/`. Reusable components: `src/components/`.
+- Routes aggregate from module bundles in `src/routes/`. Stores remain in `src/stores/`. Shared services/config/utilities stay at the root of `src`.
+- UI is modularised under `src/modules/`:
+  - `button-activator/` holds the launcher components, composeables, and preview view.
+  - `chatbot-view/` contains the iframe chat surface components and the bot/panel views.
 - Static assets: `public/`; generated media and Tailwind tokens: `src/assets/` and `src/style.css`.
-- Widget build targets: `src/activator/` and `src/widget/` for the embeddable activator and view.
+- Widget build target for the embeddable bundle lives under `src/widget/`.
 - Place tests in `src/__tests__/` or beside modules they cover.
 
 ## Build, Test, and Development Commands

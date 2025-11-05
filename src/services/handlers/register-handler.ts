@@ -1,9 +1,5 @@
-/**
- * User Register Handler
- * Handles user registration logic and API calls
- */
-
 import { useUsersStore } from '../../stores/users'
+import { getRecaptchaToken } from '../../utils/util-recaptcha'
 import { generateCustomerCode } from '../../utils/util-string'
 import { getUserTimezoneOffset } from '../../utils/util-timezone'
 import { registerModule } from '../apis/core/register-module'
@@ -21,11 +17,13 @@ export async function doUserRegister(): Promise<boolean> {
 
     // Step 3: Get user timezone offset
     const customerTimezone = getUserTimezoneOffset()
+    const recaptchaToken = await getRecaptchaToken('register')
 
     // Step 1: Prepare payload for register API
     const payload: IRegisterWidgetRequest = {
       customerGeneratedCode,
       customerTimezone,
+      recaptchaToken,
     }
 
     // Step 4: Call register API

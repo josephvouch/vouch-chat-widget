@@ -43,8 +43,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import IconMinimize from '../../assets/icon-minimize.vue'
-import { useWidgetStylesStore } from '../../stores/widget-styles'
+import IconMinimize from '@/assets/icon-minimize.vue'
+import { useWidgetStylesStore } from '@/stores/widget-styles'
 
 interface IProps {
   titleId: string

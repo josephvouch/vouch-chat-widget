@@ -80,6 +80,7 @@ export interface ISendMessageResponse {
 export interface IRegisterWidgetRequest {
   customerGeneratedCode: string
   customerTimezone?: number | null
+  recaptchaToken: string
 }
 
 /**

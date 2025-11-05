@@ -94,7 +94,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
-import { useWidgetStylesStore } from '../../stores/widget-styles'
+import { useWidgetStylesStore } from '@/stores/widget-styles'
 
 const props = defineProps({
   open: {

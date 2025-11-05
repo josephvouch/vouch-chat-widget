@@ -1,15 +1,15 @@
 import { createApp } from 'vue'
 import { VueReCaptcha } from 'vue-recaptcha-v3'
 import { createPinia } from 'pinia'
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { createPersistedState } from 'pinia-plugin-persistedstate'
 
 import './style.css'
 
 import App from './App.vue'
 import { IS_DEV, RECAPTCHA_SITE_KEY, WIDGET_API_KEY } from './config/constants'
-import { router } from './router'
+import { router } from './routes'
 import { fetchAndSetWidgetStyles } from './services/handlers/widget-styles-handler'
-import { setWidgetApiKeyGlobal } from './stores/users'
+import { getWidgetPersistKey, setWidgetApiKeyGlobal } from './stores/widget-api-key'
 
 // Retrieve widget API key on first load (BEFORE creating Pinia)
 const appElement = document.getElementById('app')
@@ -41,18 +41,28 @@ async function initializeApp(): Promise<void> {
   const app = createApp(App)
 
   const pinia = createPinia()
-  pinia.use(piniaPluginPersistedstate)
+  pinia.use(
+    createPersistedState({
+      key: (baseKey: string) => getWidgetPersistKey(baseKey),
+    }),
+  )
 
   app.use(pinia)
 
   // Fetch widget styles from API (required before mounting)
-  const stylesLoaded = await fetchAndSetWidgetStyles()
-  if (!stylesLoaded) {
-    console.error(
-      '[Vouch Chat Widget] FATAL ERROR: Failed to load widget styles from API. ' +
-        'Please check your network connection and API configuration.',
-    )
-    throw new Error('Failed to load widget styles')
+  const shouldFetchWidgetStyles =
+    typeof window === 'undefined' ||
+    new URL(window.location.href).searchParams.get('fromIframe') !== '1'
+
+  if (shouldFetchWidgetStyles) {
+    const stylesLoaded = await fetchAndSetWidgetStyles()
+    if (!stylesLoaded) {
+      console.error(
+        '[Vouch Chat Widget] FATAL ERROR: Failed to load widget styles from API. ' +
+          'Please check your network connection and API configuration.',
+      )
+      throw new Error('Failed to load widget styles')
+    }
   }
 
   app.use(router)
