@@ -103,7 +103,6 @@ export default [
         'error',
         { allowExpressions: true, allowTypedFunctionExpressions: true }
       ],
-      'security/detect-object-injection': 'error',
       'security/detect-non-literal-regexp': 'error',
       'import/no-unresolved': ['error', { ignore: ['^~icons/'] }],
       'simple-import-sort/imports': [

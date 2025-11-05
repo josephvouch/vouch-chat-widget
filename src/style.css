@@ -14,23 +14,6 @@
     padding: 0;
   }
 
-  :root {
-    font-family:
-      'Inter',
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      'Segoe UI',
-      sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
-    color-scheme: light dark;
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
   body {
     @apply vc3-m-0 vc3-bg-slate-950 vc3-text-slate-100 vc3-antialiased vc3-overflow-clip;
   }
@@ -42,13 +25,5 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-  }
-
-  a {
-    @apply vc3-font-medium vc3-text-indigo-400 vc3-underline-offset-4 vc3-transition hover:vc3-text-indigo-300;
-  }
-
-  button {
-    @apply vc3-rounded-lg vc3-border vc3-border-transparent vc3-bg-slate-800 vc3-px-4 vc3-py-2 vc3-font-medium vc3-transition hover:vc3-border-indigo-500 focus-visible:vc3-outline-none focus-visible:vc3-ring-2 focus-visible:vc3-ring-indigo-400 focus-visible:vc3-ring-offset-2 focus-visible:vc3-ring-offset-slate-950;
   }
 }

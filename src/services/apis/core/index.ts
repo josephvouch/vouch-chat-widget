@@ -16,6 +16,7 @@ import type { IApiError, IApiResponse } from './types'
 const coreServiceApi: AxiosInstance = axios.create({
   baseURL: CORE_SERVICE_HOST,
   timeout: 30000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },

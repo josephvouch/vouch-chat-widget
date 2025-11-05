@@ -3,65 +3,41 @@
     class="chatbot-body vc3-flex-1 vc3-min-h-0 vc3-overflow-y-auto vc3-px-4 vc3-py-3"
     :style="bodyStyles"
   >
-    <ul class="vc3-space-y-3">
+    <ul
+      v-if="messageList.length > 0"
+      class="vc3-space-y-3"
+    >
       <li
-        v-for="message in mockMessages"
+        v-for="message in messageList"
         :key="message._id"
       >
         <MessageBubble :message="message" />
       </li>
     </ul>
+    <p
+      v-else
+      class="vc3-text-center vc3-text-sm vc3-text-slate-500 vc3-mt-6"
+    >
+      Ask your first question to start the conversation.
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 import type { IMessage } from '@/services/apis/core/types'
 import { useWidgetStylesStore } from '@/stores/widget-styles'
 
 import MessageBubble from '../MessageBubble.vue'
 
-// Mock messages data for development
-const mockMessages = ref<IMessage[]>([
-  {
-    _id: '1',
-    fromMe: false,
-    msgType: 'text',
-    text: 'Hello! Welcome to Mercure ICON Singapore. How can I assist you today?',
-    senderBy: 'Bot',
-    channel: 'Web',
-    createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(), // 10 minutes ago
-  },
-  {
-    _id: '2',
-    fromMe: true,
-    msgType: 'text',
-    text: "Hi! I'd like to know about the check-in time.",
-    senderBy: 'Guest',
-    channel: 'Web',
-    createdAt: new Date(Date.now() - 9 * 60 * 1000).toISOString(), // 9 minutes ago
-  },
-  {
-    _id: '3',
-    fromMe: false,
-    msgType: 'text',
-    // eslint-disable-next-line max-len
-    text: 'Our standard check-in time is 3:00 PM and check-out is at 12:00 PM. Early check-in and late check-out are subject to availability.',
-    senderBy: 'Bot',
-    channel: 'Web',
-    createdAt: new Date(Date.now() - 8 * 60 * 1000).toISOString(), // 8 minutes ago
-  },
-  {
-    _id: '4',
-    fromMe: true,
-    msgType: 'text',
-    text: 'Perfect! Thank you for the information.',
-    senderBy: 'Guest',
-    channel: 'Web',
-    createdAt: new Date(Date.now() - 7 * 60 * 1000).toISOString(), // 7 minutes ago
-  },
-])
+interface IProps {
+  messages: IMessage[]
+}
+
+const props = defineProps<IProps>()
+
+const messageList = computed<IMessage[]>(() => props.messages ?? [])
 
 const widgetStylesStore = useWidgetStylesStore()
 const conversationStyles = computed(() => widgetStylesStore.getConversationStyles)

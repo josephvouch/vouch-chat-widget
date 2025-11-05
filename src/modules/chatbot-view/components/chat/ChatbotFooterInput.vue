@@ -107,11 +107,10 @@ import IconAttachment from '@/assets/icon-attachment.vue'
 import IconSend from '@/assets/icon-send.vue'
 import { useWidgetStylesStore } from '@/stores/widget-styles'
 
-interface IProps {
+const props = defineProps<{
   open: boolean
-}
-
-const props = defineProps<IProps>()
+  loading: boolean
+}>()
 
 const emit = defineEmits<{
   (event: 'send', payload: { text: string }): void
@@ -125,7 +124,9 @@ const fontsStyles = computed(() => widgetStylesStore.getFontsStyles)
 const composerEl = ref<HTMLInputElement | null>(null)
 const draft = ref('')
 
-const composerDisabled = computed<boolean>(() => !draft.value.trim())
+const composerDisabled = computed<boolean>(
+  () => props.loading || !draft.value.trim(),
+)
 
 const footerBackgroundStyles = computed<Record<string, string>>(() => ({
   backgroundColor: conversationStyles.value.backgroundColor,

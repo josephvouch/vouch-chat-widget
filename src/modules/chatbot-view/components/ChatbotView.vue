@@ -11,7 +11,10 @@
 
     <!-- Scrollable Body -->
     <ChatbotBodyWelcome v-if="showWelcome" />
-    <ChatbotBodyMessage v-else />
+    <ChatbotBodyMessage
+      v-else
+      :messages="props.messages"
+    />
 
     <!-- Fixed Footer -->
     <ChatbotFooterWelcome
@@ -21,7 +24,8 @@
     />
     <ChatbotFooterInput
       v-else
-      :open="open"
+      :open="props.open"
+      :loading="props.loading"
       @send="handleSend"
     />
   </div>
@@ -31,6 +35,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
+import type { IMessage } from '@/services/apis/core/types'
 import { doUserRegister } from '@/services/handlers/register-handler'
 import { useUsersStore } from '@/stores/users'
 import { initializeRecaptcha } from '@/utils/util-recaptcha'
@@ -41,13 +46,11 @@ import ChatbotHeader from './chat/ChatbotHeader.vue'
 import ChatbotBodyWelcome from './chat/welcome-screen/ChatbotBodyWelcome.vue'
 import ChatbotFooterWelcome from './chat/welcome-screen/ChatbotFooterWelcome.vue'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-})
+const props = defineProps<{
+  open: boolean
+  messages: IMessage[]
+  loading: boolean
+}>()
 
 const emit = defineEmits<{
   (event: 'close'): void

@@ -24,12 +24,19 @@
           class="message-bubble"
           :style="bubbleStyles"
         >
-          <p
-            class="vc3-whitespace-pre-wrap vc3-break-words"
+          <template v-if="message.fromMe">
+            <p
+              class="vc3-whitespace-pre-wrap vc3-break-words"
+              :style="textStyles"
+            >
+              {{ message.text }}
+            </p>
+          </template>
+          <MarkdownText
+            v-else
+            :content="message.text"
             :style="textStyles"
-          >
-            {{ message.text }}
-          </p>
+          />
         </div>
 
         <!-- Date outside the bubble -->
@@ -48,6 +55,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import MarkdownText from '@/components/MarkdownText.vue'
 import type { IMessage } from '@/services/apis/core/types'
 import { useWidgetStylesStore } from '@/stores/widget-styles'
 
@@ -141,7 +149,7 @@ const formattedDate = computed<string>(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .message-bubble-wrapper {
   width: 100%;
 }

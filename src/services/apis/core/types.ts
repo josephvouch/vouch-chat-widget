@@ -58,15 +58,6 @@ export interface IRetrieveLastMessagesResponse {
  * Send message - Request body
  */
 export interface ISendMessageRequest {
-  text: string
-  msgType: 'text'
-}
-
-/**
- * Send message - Response data
- */
-export interface ISendMessageResponse {
-  status: number
   message: string
 }
 
