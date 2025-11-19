@@ -29,18 +29,20 @@ Vue 3 + TypeScript + Vite codebase for the embeddable AVA chat experience. The p
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `pnpm dev` | Run Vite dev server with HMR. |
-| `pnpm build` | Type-check via `vue-tsc -b` then create a production bundle. |
-| `pnpm preview` | Serve the latest `dist/` build for local smoke testing. |
-| `pnpm lint` | Run ESLint across `.ts` and `.vue` files. |
-| `pnpm format` | Execute Prettier over the repo. |
-| `pnpm test` | Run the Vitest suite once. |
-| `pnpm test:watch` | Run Vitest in watch mode. |
-| `pnpm build:widget-activator` | Build the launcher entry for the embeddable bundle. |
-| `pnpm build:widget-view` | Build the iframe chat view entry (`--mode widget-view`). |
-| `pnpm build:widgets` | Clean `dist/` and run both widget builds sequentially. |
+| Command                       | Description                                                            |
+| ----------------------------- | ---------------------------------------------------------------------- |
+| `pnpm dev`                    | Run Vite dev server with HMR.                                          |
+| `pnpm build`                  | Type-check via `vue-tsc -b` then create a production bundle.           |
+| `pnpm preview`                | Serve the latest `dist/` build for local smoke testing.                |
+| `pnpm lint`                   | Run ESLint across `.ts` and `.vue` files.                              |
+| `pnpm format`                 | Execute Prettier over the repo.                                        |
+| `pnpm test`                   | Run the Vitest suite once.                                             |
+| `pnpm test:watch`             | Run Vitest in watch mode.                                              |
+| `pnpm build:widget-activator` | Build the launcher entry for the embeddable bundle.                    |
+| `pnpm build:widget-view`      | Build the iframe chat view entry (`--mode widget-view`).               |
+| `pnpm build:widgets`          | Clean `dist/` and run both widget builds sequentially.                 |
+| `pnpm type-check`             | Run TypeScript type checking without emitting files.                   |
+| `pnpm precommit`              | Run all pre-commit checks manually (lint-staged + type-check + tests). |
 
 ## Architecture
 
@@ -69,7 +71,12 @@ pnpm test:watch      # watch mode during dev
 1. Run `pnpm dev`.
 2. Work inside module folders and keep shared functionality at the root of `src`.
 3. For stateful features, author Pinia stores in `src/stores` and add unit tests under `src/stores/__tests__/`.
-4. Validate linting (`pnpm lint`) and testing (`pnpm test`) before committing.
+4. **Pre-commit hooks automatically run** on every commit:
+   - Lints and formats staged files
+   - Type-checks the entire project
+   - Runs all tests (105 tests in ~2s)
+   - Validates commit message format (Conventional Commits)
+   - See [PRE_COMMIT_GUIDE.md](./PRE_COMMIT_GUIDE.md) for details
 5. For UI features, document manual QA in PRs (browsers exercised, `pnpm preview` screenshots).
 
 ## Deployment / Embedding
