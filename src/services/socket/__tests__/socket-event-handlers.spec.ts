@@ -16,8 +16,8 @@ vi.mock('@/utils/message-factory', () => ({
     senderBy: props.senderBy,
     msgType: 'typing-indicator',
     channel: 'chat-widget',
-    createdAt: new Date().toISOString()
-  }))
+    createdAt: new Date().toISOString(),
+  })),
 }))
 
 describe('socket-event-handlers', () => {
@@ -42,9 +42,7 @@ describe('socket-event-handlers', () => {
       }),
       off: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
         if (eventHandlers[event]) {
-          eventHandlers[event] = eventHandlers[event].filter(
-            (h) => h !== handler
-          )
+          eventHandlers[event] = eventHandlers[event].filter((h) => h !== handler)
         }
         return mockSocket as Socket
       }),
@@ -57,12 +55,10 @@ describe('socket-event-handlers', () => {
         }),
         off: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
           if (eventHandlers[event]) {
-            eventHandlers[event] = eventHandlers[event].filter(
-              (h) => h !== handler
-            )
+            eventHandlers[event] = eventHandlers[event].filter((h) => h !== handler)
           }
-        })
-      }
+        }),
+      },
     } as Partial<Socket>
   })
 
@@ -83,28 +79,13 @@ describe('socket-event-handlers', () => {
     it('registers all required event handlers', () => {
       registerSocketEventHandlers(mockSocket as Socket)
 
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        'connect',
-        expect.any(Function)
-      )
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        'disconnect',
-        expect.any(Function)
-      )
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        'connect_error',
-        expect.any(Function)
-      )
+      expect(mockSocket.on).toHaveBeenCalledWith('connect', expect.any(Function))
+      expect(mockSocket.on).toHaveBeenCalledWith('disconnect', expect.any(Function))
+      expect(mockSocket.on).toHaveBeenCalledWith('connect_error', expect.any(Function))
       expect(mockSocket.on).toHaveBeenCalledWith('error', expect.any(Function))
       expect(mockSocket.on).toHaveBeenCalledWith('typing', expect.any(Function))
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        'chat:messages:received',
-        expect.any(Function)
-      )
-      expect(mockSocket.io.on).toHaveBeenCalledWith(
-        'reconnect',
-        expect.any(Function)
-      )
+      expect(mockSocket.on).toHaveBeenCalledWith('chat:messages:received', expect.any(Function))
+      expect(mockSocket.io.on).toHaveBeenCalledWith('reconnect', expect.any(Function))
     })
 
     it('returns cleanup function that removes all handlers', () => {
@@ -112,31 +93,13 @@ describe('socket-event-handlers', () => {
 
       cleanup()
 
-      expect(mockSocket.off).toHaveBeenCalledWith(
-        'connect',
-        expect.any(Function)
-      )
-      expect(mockSocket.off).toHaveBeenCalledWith(
-        'disconnect',
-        expect.any(Function)
-      )
-      expect(mockSocket.off).toHaveBeenCalledWith(
-        'connect_error',
-        expect.any(Function)
-      )
+      expect(mockSocket.off).toHaveBeenCalledWith('connect', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('disconnect', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('connect_error', expect.any(Function))
       expect(mockSocket.off).toHaveBeenCalledWith('error', expect.any(Function))
-      expect(mockSocket.off).toHaveBeenCalledWith(
-        'typing',
-        expect.any(Function)
-      )
-      expect(mockSocket.off).toHaveBeenCalledWith(
-        'chat:messages:received',
-        expect.any(Function)
-      )
-      expect(mockSocket.io.off).toHaveBeenCalledWith(
-        'reconnect',
-        expect.any(Function)
-      )
+      expect(mockSocket.off).toHaveBeenCalledWith('typing', expect.any(Function))
+      expect(mockSocket.off).toHaveBeenCalledWith('chat:messages:received', expect.any(Function))
+      expect(mockSocket.io.off).toHaveBeenCalledWith('reconnect', expect.any(Function))
     })
   })
 
@@ -148,7 +111,7 @@ describe('socket-event-handlers', () => {
       emitEvent('connect')
 
       expect(consoleSpy).toHaveBeenCalledWith('[socket] connected guys', {
-        id: 'socket-123'
+        id: 'socket-123',
       })
     })
   })
@@ -161,7 +124,7 @@ describe('socket-event-handlers', () => {
       emitEvent('disconnect', 'transport close')
 
       expect(consoleSpy).toHaveBeenCalledWith('[socket] disconnected guys', {
-        reason: 'transport close'
+        reason: 'transport close',
       })
     })
   })
@@ -174,7 +137,7 @@ describe('socket-event-handlers', () => {
       emitEvent('reconnect', 3)
 
       expect(consoleSpy).toHaveBeenCalledWith('[socket] reconnected', {
-        attempt: 3
+        attempt: 3,
       })
     })
   })
@@ -208,7 +171,7 @@ describe('socket-event-handlers', () => {
 
       const payload: ITypingEventPayload = {
         source: 'agent',
-        isTyping: true
+        isTyping: true,
       }
 
       emitEvent('typing', payload)
@@ -303,7 +266,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Employee',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       emitEvent('chat:messages:received', payload)
@@ -325,7 +288,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Customer',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       emitEvent('chat:messages:received', payload)
@@ -347,7 +310,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Assistant',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       emitEvent('chat:messages:received', payload)
@@ -368,7 +331,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Employee',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
       store.appendMessage(existingMessage)
 
@@ -379,7 +342,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Employee',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       emitEvent('chat:messages:received', payload)
@@ -400,7 +363,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'You',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
       store.appendMessage(placeholderMessage)
 
@@ -411,7 +374,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Customer',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       emitEvent('chat:messages:received', payload)
@@ -431,7 +394,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Employee',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       emitEvent('chat:messages:received', payload)
@@ -461,7 +424,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Employee',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       emitEvent('chat:messages:received', payload)
@@ -480,7 +443,7 @@ describe('socket-event-handlers', () => {
         msgType: 'text',
         senderBy: 'Employee',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       emitEvent('chat:messages:received', payload)
@@ -493,7 +456,7 @@ describe('socket-event-handlers', () => {
     it('allows overriding default handlers', () => {
       const customConnectHandler = vi.fn()
       registerSocketEventHandlers(mockSocket as Socket, {
-        connect: customConnectHandler
+        connect: customConnectHandler,
       })
 
       emitEvent('connect')
@@ -506,16 +469,14 @@ describe('socket-event-handlers', () => {
       const customDisconnectHandler = vi.fn()
 
       registerSocketEventHandlers(mockSocket as Socket, {
-        disconnect: customDisconnectHandler
+        disconnect: customDisconnectHandler,
       })
 
       emitEvent('connect')
       emitEvent('disconnect', 'io server disconnect')
 
       expect(consoleSpy).toHaveBeenCalled() // Default connect handler still works
-      expect(customDisconnectHandler).toHaveBeenCalledWith(
-        'io server disconnect'
-      )
+      expect(customDisconnectHandler).toHaveBeenCalledWith('io server disconnect')
     })
   })
 })

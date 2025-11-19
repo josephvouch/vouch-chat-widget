@@ -15,7 +15,7 @@ vi.mock('@/utils/message-factory', () => ({
     senderBy: props.senderBy,
     msgType: 'text',
     channel: 'chat-widget',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   })),
   createTypingIndicatorMessage: vi.fn((props) => ({
     _id: `typing-${Date.now()}-${Math.random()}`,
@@ -24,8 +24,8 @@ vi.mock('@/utils/message-factory', () => ({
     senderBy: props.senderBy,
     msgType: 'typing-indicator',
     channel: 'chat-widget',
-    createdAt: new Date().toISOString()
-  }))
+    createdAt: new Date().toISOString(),
+  })),
 }))
 
 vi.mock('../../services/handlers/message-stream-handler', () => ({
@@ -33,7 +33,7 @@ vi.mock('../../services/handlers/message-stream-handler', () => ({
   STREAMING_EVENT_AI_ANSWER: 'ai_answer',
   STREAMING_EVENT_CHAIN_RESULT: 'chain_result',
   STREAMING_EVENT_TYPING_INDICATOR: 'typing_indicator',
-  STREAMING_EVENT_BOT_DISABLED: 'bot_disabled'
+  STREAMING_EVENT_BOT_DISABLED: 'bot_disabled',
 }))
 
 describe('useChatbotStore', () => {
@@ -102,7 +102,7 @@ describe('useChatbotStore', () => {
         senderBy: 'Assistant',
         msgType: 'text',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       store.appendMessage(message)
@@ -123,7 +123,7 @@ describe('useChatbotStore', () => {
         senderBy: 'Assistant',
         msgType: 'text',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       store.appendMessage(message)
@@ -143,7 +143,7 @@ describe('useChatbotStore', () => {
         senderBy: 'You',
         msgType: 'text',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       store.appendMessage(message)
@@ -162,8 +162,8 @@ describe('useChatbotStore', () => {
           senderBy: 'Assistant',
           msgType: 'text',
           channel: 'chat-widget',
-          createdAt: new Date().toISOString()
-        }
+          createdAt: new Date().toISOString(),
+        },
       ]
 
       const newMessages: IMessage[] = [
@@ -174,8 +174,8 @@ describe('useChatbotStore', () => {
           senderBy: 'Assistant',
           msgType: 'text',
           channel: 'chat-widget',
-          createdAt: new Date().toISOString()
-        }
+          createdAt: new Date().toISOString(),
+        },
       ]
 
       store.setMessages(newMessages)
@@ -194,8 +194,8 @@ describe('useChatbotStore', () => {
           senderBy: 'Assistant',
           msgType: 'text',
           channel: 'chat-widget',
-          createdAt: new Date().toISOString()
-        }
+          createdAt: new Date().toISOString(),
+        },
       ]
 
       const oldMessages: IMessage[] = [
@@ -206,7 +206,7 @@ describe('useChatbotStore', () => {
           senderBy: 'Assistant',
           msgType: 'text',
           channel: 'chat-widget',
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         },
         {
           _id: 'msg-2',
@@ -215,8 +215,8 @@ describe('useChatbotStore', () => {
           senderBy: 'Assistant',
           msgType: 'text',
           channel: 'chat-widget',
-          createdAt: new Date().toISOString()
-        }
+          createdAt: new Date().toISOString(),
+        },
       ]
 
       store.prependMessages(oldMessages)
@@ -237,8 +237,8 @@ describe('useChatbotStore', () => {
           senderBy: 'Assistant',
           msgType: 'text',
           channel: 'chat-widget',
-          createdAt: new Date().toISOString()
-        }
+          createdAt: new Date().toISOString(),
+        },
       ]
 
       store.clearMessages()
@@ -256,8 +256,8 @@ describe('useChatbotStore', () => {
           senderBy: 'Assistant',
           msgType: 'text',
           channel: 'chat-widget',
-          createdAt: new Date().toISOString()
-        }
+          createdAt: new Date().toISOString(),
+        },
       ]
 
       store.patchMessage('msg-1', { text: 'Updated' })
@@ -282,7 +282,7 @@ describe('useChatbotStore', () => {
         senderBy: 'Assistant',
         msgType: 'text',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
       const message2: IMessage = {
         _id: 'msg-2',
@@ -291,7 +291,7 @@ describe('useChatbotStore', () => {
         senderBy: 'Assistant',
         msgType: 'text',
         channel: 'chat-widget',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       store.messages = [message1, message2]
@@ -324,18 +324,14 @@ describe('useChatbotStore', () => {
       const store = useChatbotStore()
       const mockCancel = vi.fn()
 
-      let onEventCallback:
-        | ((event: messageStreamHandler.IMessageStreamEvent) => void)
-        | null = null
+      let onEventCallback: ((event: messageStreamHandler.IMessageStreamEvent) => void) | null = null
       let onCompleteCallback: (() => void) | null = null
 
-      vi.mocked(messageStreamHandler.sendMessageWithStream).mockImplementation(
-        async (_data, callbacks) => {
-          onEventCallback = callbacks.onEvent
-          onCompleteCallback = callbacks.onComplete
-          return { cancel: mockCancel }
-        }
-      )
+      vi.mocked(messageStreamHandler.sendMessageWithStream).mockImplementation(async (_data, callbacks) => {
+        onEventCallback = callbacks.onEvent
+        onCompleteCallback = callbacks.onComplete
+        return { cancel: mockCancel }
+      })
 
       const sendPromise = store.sendMessage('Hello')
 
@@ -351,7 +347,7 @@ describe('useChatbotStore', () => {
       // Simulate AI answer event
       onEventCallback?.({
         event: messageStreamHandler.STREAMING_EVENT_AI_ANSWER,
-        data: 'Hi there!'
+        data: 'Hi there!',
       })
 
       await vi.waitFor(() => {
@@ -376,12 +372,10 @@ describe('useChatbotStore', () => {
 
       let onErrorCallback: ((error: unknown) => void) | null = null
 
-      vi.mocked(messageStreamHandler.sendMessageWithStream).mockImplementation(
-        async (_data, callbacks) => {
-          onErrorCallback = callbacks.onError
-          return { cancel: vi.fn() }
-        }
-      )
+      vi.mocked(messageStreamHandler.sendMessageWithStream).mockImplementation(async (_data, callbacks) => {
+        onErrorCallback = callbacks.onError
+        return { cancel: vi.fn() }
+      })
 
       const sendPromise = store.sendMessage('Hello')
 
@@ -402,18 +396,14 @@ describe('useChatbotStore', () => {
     it('handles typing indicator event', async () => {
       const store = useChatbotStore()
 
-      let onEventCallback:
-        | ((event: messageStreamHandler.IMessageStreamEvent) => void)
-        | null = null
+      let onEventCallback: ((event: messageStreamHandler.IMessageStreamEvent) => void) | null = null
       let onCompleteCallback: (() => void) | null = null
 
-      vi.mocked(messageStreamHandler.sendMessageWithStream).mockImplementation(
-        async (_data, callbacks) => {
-          onEventCallback = callbacks.onEvent
-          onCompleteCallback = callbacks.onComplete
-          return { cancel: vi.fn() }
-        }
-      )
+      vi.mocked(messageStreamHandler.sendMessageWithStream).mockImplementation(async (_data, callbacks) => {
+        onEventCallback = callbacks.onEvent
+        onCompleteCallback = callbacks.onComplete
+        return { cancel: vi.fn() }
+      })
 
       const sendPromise = store.sendMessage('Hello')
 
@@ -424,7 +414,7 @@ describe('useChatbotStore', () => {
       // Simulate typing indicator active
       onEventCallback?.({
         event: messageStreamHandler.STREAMING_EVENT_TYPING_INDICATOR,
-        data: { active: true }
+        data: { active: true },
       })
 
       await vi.waitFor(() => {
@@ -435,7 +425,7 @@ describe('useChatbotStore', () => {
       // Simulate typing indicator inactive
       onEventCallback?.({
         event: messageStreamHandler.STREAMING_EVENT_TYPING_INDICATOR,
-        data: { active: false }
+        data: { active: false },
       })
 
       await vi.waitFor(() => {
@@ -449,18 +439,14 @@ describe('useChatbotStore', () => {
     it('handles bot disabled event', async () => {
       const store = useChatbotStore()
 
-      let onEventCallback:
-        | ((event: messageStreamHandler.IMessageStreamEvent) => void)
-        | null = null
+      let onEventCallback: ((event: messageStreamHandler.IMessageStreamEvent) => void) | null = null
       let onCompleteCallback: (() => void) | null = null
 
-      vi.mocked(messageStreamHandler.sendMessageWithStream).mockImplementation(
-        async (_data, callbacks) => {
-          onEventCallback = callbacks.onEvent
-          onCompleteCallback = callbacks.onComplete
-          return { cancel: vi.fn() }
-        }
-      )
+      vi.mocked(messageStreamHandler.sendMessageWithStream).mockImplementation(async (_data, callbacks) => {
+        onEventCallback = callbacks.onEvent
+        onCompleteCallback = callbacks.onComplete
+        return { cancel: vi.fn() }
+      })
 
       const sendPromise = store.sendMessage('Hello')
 
@@ -471,7 +457,7 @@ describe('useChatbotStore', () => {
       // Add assistant message
       onEventCallback?.({
         event: messageStreamHandler.STREAMING_EVENT_AI_ANSWER,
-        data: 'Response'
+        data: 'Response',
       })
 
       await vi.waitFor(() => {
@@ -481,7 +467,7 @@ describe('useChatbotStore', () => {
       // Simulate bot disabled
       onEventCallback?.({
         event: messageStreamHandler.STREAMING_EVENT_BOT_DISABLED,
-        data: null
+        data: null,
       })
 
       await vi.waitFor(() => {
