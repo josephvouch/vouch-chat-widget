@@ -18,6 +18,11 @@ import {
 } from '../services/handlers/message-stream-handler'
 
 export const useChatbotStore = defineStore('chatbot', () => {
+  const isMessage = (message: IMessage | null): message is IMessage =>
+    message !== null
+  const getMessageId = (message: IMessage | null): string | null =>
+    message?._id ?? null
+
   const isOpen = ref(false)
   const isLoading = ref(false)
   const messages = ref<IMessage[]>([])
@@ -200,11 +205,14 @@ export const useChatbotStore = defineStore('chatbot', () => {
               }
               case STREAMING_EVENT_BOT_DISABLED: {
                 botDisabled = true
-                if (assistantMessage) {
-                  messages.value = messages.value.filter(
-                    (message) => message._id !== assistantMessage._id,
-                  )
-                  assistantMessage = null
+                if (isMessage(assistantMessage)) {
+                  const assistantId = getMessageId(assistantMessage)
+                  if (assistantId) {
+                    messages.value = messages.value.filter(
+                      (message) => message._id !== assistantId,
+                    )
+                    assistantMessage = null
+                  }
                 }
                 break
               }
@@ -219,11 +227,14 @@ export const useChatbotStore = defineStore('chatbot', () => {
               error instanceof Error && error.message
                 ? error.message
                 : 'Sorry, we ran into a problem while generating a reply.'
-            if (assistantMessage) {
-              patchMessage(assistantMessage._id, {
-                text: message,
-                msgType: 'system',
-              })
+            if (isMessage(assistantMessage)) {
+              const assistantId = getMessageId(assistantMessage)
+              if (assistantId) {
+                patchMessage(assistantId, {
+                  text: message,
+                  msgType: 'system',
+                })
+              }
             }
             streamReject?.(error)
             streamReject = null
@@ -231,16 +242,19 @@ export const useChatbotStore = defineStore('chatbot', () => {
           onComplete: () => {
             if (!botDisabled) {
               // Ensure we have some assistant text even if no chunks were streamed
-              if (assistantMessage) {
-                const assistant = messages.value.find(
-                  (message) => message._id === assistantMessage._id,
-                )
-                if (assistant && !assistant.text.trim()) {
-                  patchMessage(assistantMessage._id, {
-                    text:
-                      'Thanks for your message! I will get back shortly.',
-                    msgType: 'text',
-                  })
+              if (isMessage(assistantMessage)) {
+                const assistantId = getMessageId(assistantMessage)
+                if (assistantId) {
+                  const assistant = messages.value.find(
+                    (message) => message._id === assistantId,
+                  )
+                  if (assistant && !assistant.text.trim()) {
+                    patchMessage(assistantId, {
+                      text:
+                        'Thanks for your message! I will get back shortly.',
+                      msgType: 'text',
+                    })
+                  }
                 }
               }
             }
@@ -261,14 +275,18 @@ export const useChatbotStore = defineStore('chatbot', () => {
       await streamPromise
     } catch (error) {
       console.error('[chatbot] failed to send message', error)
-      if (assistantMessage) {
-        patchMessage(assistantMessage._id, {
-          text:
-            error instanceof Error && error.message
-              ? error.message
-              : 'Unable to send your message. Please try again.',
-          msgType: 'system',
-        })
+      const assistant = assistantMessage
+      if (isMessage(assistant)) {
+        const assistantId = getMessageId(assistant)
+        if (assistantId) {
+          patchMessage(assistantId, {
+            text:
+              error instanceof Error && error.message
+                ? error.message
+                : 'Unable to send your message. Please try again.',
+            msgType: 'system',
+          })
+        }
       }
     } finally {
       activeStream.value = null
