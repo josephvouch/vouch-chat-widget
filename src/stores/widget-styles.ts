@@ -15,7 +15,7 @@ import type {
   ILauncherStyles,
   IWelcomeScreenStyles,
   IWidgetStylesData,
-} from '../services/apis/core/types'
+} from '../services/apis/chat-microservice/types'
 
 const createDefaultHeaderStyles = (): IHeaderStyles => ({
   bgColor: '#0D47A1',

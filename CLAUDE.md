@@ -103,7 +103,7 @@ The `services/` folder follows a structured pattern for API integration, busines
 ```
 src/services/
 ├── apis/                      # API service modules
-│   └── core/                  # Core Service API
+│   └── chat-microservice/     # Chat Microservice API
 │       ├── index.ts           # Axios instance with interceptors
 │       ├── types.ts           # TypeScript types for all APIs
 │       ├── messaging-module.ts
@@ -115,7 +115,7 @@ src/services/
     └── mockService.ts
 ```
 
-#### API Services Pattern (`services/apis/core/`)
+#### API Services Pattern (`services/apis/chat-microservice/`)
 
 **Architecture Principles:**
 1. **Modular**: Each API domain has its own module file (e.g., `messaging-module.ts`)
@@ -123,8 +123,8 @@ src/services/
 3. **Centralized**: Single Axios instance in `index.ts` with shared configuration
 4. **Constants**: Each module uses `API_PATHS` constants for endpoint URLs
 
-**Core API Client** (`services/apis/core/index.ts`):
-- Axios instance configured with base URL from `envConfig.coreServiceHost`
+**Chat Microservice API Client** (`services/apis/chat-microservice/index.ts`):
+- Axios instance configured with base URL from `CHAT_MICROSERVICE_HOST`
 - Request interceptor for authentication (JWT token injection - TODO)
 - Response interceptor for error handling and logging
 - Helper functions: `extractApiData()`, `handleApiError()`
@@ -146,11 +146,11 @@ src/services/
    - `getStyles()`: GET widget styling configuration (header, fonts, launcher, conversation, input, etc.)
 
 **Adding a New API Module:**
-1. Create `services/apis/core/[module-name]-module.ts`
+1. Create `services/apis/chat-microservice/[module-name]-module.ts`
 2. Define `API_PATHS` constant at the top
-3. Add TypeScript types to `services/apis/core/types.ts`
+3. Add TypeScript types to `services/apis/chat-microservice/types.ts`
 4. Export module object with async methods
-5. Use `coreServiceApi` from `./index` for HTTP calls
+5. Use `chatMicroserviceApi` from `./index` for HTTP calls
 6. Handle errors with `handleApiError()`
 
 **Example Module Structure:**
@@ -163,7 +163,7 @@ export const exampleModule = {
   getData: async (): Promise<IExampleResponse> => {
     try {
       const response: AxiosResponse<IExampleResponse> =
-        await coreServiceApi.get(API_PATHS.BASE)
+        await chatMicroserviceApi.get(API_PATHS.BASE)
       return response.data
     } catch (error) {
       const apiError = handleApiError(error)
@@ -249,11 +249,11 @@ export async function doUserRegister(): Promise<boolean> {
 
 ### Environment Configuration
 
-**`src/config/env.ts`** - Centralized environment handling:
-- `envConfig.isDev`: Development mode flag
-- `envConfig.coreServiceHost`: Core Service API base URL (default: `http://localhost:3501`)
+**`src/config/constants.ts`** - Centralized environment handling:
+- `IS_DEV`: Development mode flag
+- `CHAT_MICROSERVICE_HOST`: Chat Microservice API base URL (default: `http://localhost:3501`)
 - Environment variables:
-  - `VITE_CORE_SERVICE_HOST` → Core Service API host URL
+  - `VITE_CHAT_MICROSERVICE_HOST` → Chat Microservice API host URL
   - `VITE_CHATBOT_VIEW_PANEL_IFRAME_URL` → iframe panel URL
 
 ### Routing
@@ -302,7 +302,7 @@ pnpm lint --fix        # Auto-fix issues
 
 This widget integrates with the AVA chatbot backend services:
 
-- **Core Service API**: Base URL configured via `VITE_CORE_SERVICE_HOST` (default: `http://localhost:3501`)
+- **Chat Microservice API**: Base URL configured via `VITE_CHAT_MICROSERVICE_HOST` (default: `http://localhost:3501`)
 - **Available APIs**:
   - User registration (`/api/v1/widget/registers`)
   - Message retrieval and sending (`/api/v1/widget/messages`)

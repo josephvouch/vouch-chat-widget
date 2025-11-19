@@ -2,38 +2,46 @@ import { useUsersStore } from '../../stores/users'
 import { getRecaptchaToken } from '../../utils/util-recaptcha'
 import { generateCustomerCode } from '../../utils/util-string'
 import { getUserTimezoneOffset } from '../../utils/util-timezone'
-import { registerModule } from '../apis/core/register-module'
-import type { IRegisterWidgetRequest } from '../apis/core/types'
+import { registerModule } from '../apis/chat-microservice/register-module'
+import type { IRegisterWidgetRequest } from '../apis/chat-microservice/types'
+import { initSocketClient } from '../socket'
 
 /**
  * Register user with the chat widget
  * Generates customer code, gets timezone, calls API, and stores customer ID
+ * @param customerId - Optional existing customer identifier to reuse
  * @returns Promise<boolean> - Returns true if registration is successful
  */
-export async function doUserRegister(): Promise<boolean> {
+export async function doUserRegister(customerId: string | null = null): Promise<boolean> {
   try {
-    // Step 1 & 2: Generate customer code (16 character random string)
+    const usersStore = useUsersStore()
+    // Generate customer code (16 character random string)
     const customerGeneratedCode = generateCustomerCode()
 
-    // Step 3: Get user timezone offset
+    // Get user timezone offset and recaptcha token
     const customerTimezone = getUserTimezoneOffset()
     const recaptchaToken = await getRecaptchaToken('register')
 
-    // Step 1: Prepare payload for register API
+    // Prepare payload for register API
     const payload: IRegisterWidgetRequest = {
       customerGeneratedCode,
       customerTimezone,
       recaptchaToken,
     }
 
-    // Step 4: Call register API
+    if (customerId !== null) {
+      payload.customerId = customerId
+    }
+
+    // Call register API
     const response = await registerModule.register(payload)
 
-    // Step 5: Store customerId in Pinia store
-    const usersStore = useUsersStore()
+    // Store customerId in Pinia store
     usersStore.setCustomerId(response.data.customerId)
+    usersStore.setSessionId(response.data.sessionId)
 
-    // Step 6: Return true for successful registration
+    initSocketClient()
+
     return true
   } catch (error) {
     console.error('[register-handler] User registration failed:', error)

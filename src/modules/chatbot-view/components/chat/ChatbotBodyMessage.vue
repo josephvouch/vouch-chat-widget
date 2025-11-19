@@ -1,7 +1,9 @@
 <template>
   <div
+    ref="chatBodyRef"
     class="chatbot-body vc3-flex-1 vc3-min-h-0 vc3-overflow-y-auto vc3-px-4 vc3-py-3"
     :style="bodyStyles"
+    @scroll.passive="handleScroll"
   >
     <ul
       v-if="messageList.length > 0"
@@ -24,20 +26,41 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+  withDefaults,
+} from 'vue'
 
-import type { IMessage } from '@/services/apis/core/types'
+import type { IMessage } from '@/services/apis/chat-microservice/types'
 import { useWidgetStylesStore } from '@/stores/widget-styles'
 
 import MessageBubble from '../MessageBubble.vue'
 
 interface IProps {
   messages: IMessage[]
+  canRequestHistory: boolean
 }
 
-const props = defineProps<IProps>()
+const emit = defineEmits<{
+  (event: 'request-history'): void
+}>()
+
+const props = withDefaults(defineProps<IProps>(), {
+  canRequestHistory: true,
+})
 
 const messageList = computed<IMessage[]>(() => props.messages ?? [])
+const chatBodyRef = ref<HTMLDivElement | null>(null)
+const isNearTop = ref(false)
+const shouldStickToBottom = ref(true)
+const lastScrollTop = ref(0)
+const wasBodyVisible = ref(false)
+let resizeObserver: ResizeObserver | null = null
 
 const widgetStylesStore = useWidgetStylesStore()
 const conversationStyles = computed(() => widgetStylesStore.getConversationStyles)
@@ -45,6 +68,76 @@ const conversationStyles = computed(() => widgetStylesStore.getConversationStyle
 const bodyStyles = computed<Record<string, string>>(() => ({
   backgroundColor: conversationStyles.value.backgroundColor,
 }))
+
+const scrollToBottom = (): void => {
+  const el = chatBodyRef.value
+  if (!el) return
+  // Keep the newest messages in view after DOM updates finish rendering.
+  requestAnimationFrame(() => {
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  })
+}
+
+const setupVisibilityObserver = (): void => {
+  const el = chatBodyRef.value
+  const canObserve =
+    typeof window !== 'undefined' && 'ResizeObserver' in window && el
+  if (!canObserve || !el) return
+
+  resizeObserver = new ResizeObserver((entries) => {
+    const [entry] = entries
+    if (!entry) return
+    const isVisible = entry.contentRect.height > 0
+    if (isVisible && !wasBodyVisible.value) {
+      wasBodyVisible.value = true
+      shouldStickToBottom.value = true
+      void nextTick(scrollToBottom)
+    } else if (!isVisible) {
+      wasBodyVisible.value = false
+    }
+  })
+
+  resizeObserver.observe(el)
+}
+
+onMounted(() => {
+  scrollToBottom()
+  setupVisibilityObserver()
+})
+
+const handleScroll = (): void => {
+  if (!props.canRequestHistory) return
+  const el = chatBodyRef.value
+  if (!el) return
+  const currentScrollTop = el.scrollTop
+  const nearTop = currentScrollTop <= 40
+  const distanceFromBottom = el.scrollHeight - el.clientHeight - currentScrollTop
+  shouldStickToBottom.value = distanceFromBottom <= 40
+  const isScrollingUp = currentScrollTop < lastScrollTop.value
+
+  if (nearTop && !isNearTop.value && isScrollingUp) {
+    isNearTop.value = true
+    emit('request-history')
+  } else if (!nearTop) {
+    isNearTop.value = false
+  }
+
+  lastScrollTop.value = currentScrollTop
+}
+
+watch(
+  messageList,
+  () => {
+    if (!shouldStickToBottom.value) return
+    void nextTick(scrollToBottom)
+  },
+  { deep: false },
+)
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
+})
 </script>
 
 <style scoped>

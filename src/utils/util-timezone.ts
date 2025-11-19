@@ -21,7 +21,7 @@ export function getUserTimezoneOffset(): number {
 export function getUserTimezoneName(): string {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone
-  } catch (error) {
+  } catch {
     // Fallback if Intl API is not available
     return 'UTC'
   }

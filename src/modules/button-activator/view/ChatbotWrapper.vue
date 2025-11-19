@@ -103,7 +103,7 @@ const handleResize = (payload: { height: number }): void => {
 const statusLabel = computed<string>(() => {
   const message = store.lastMessage
   if (!message) return 'Chat ready'
-  const timestamp = new Date(message.ts)
+  const timestamp = new Date(message.createdAt)
   const formattedTime = timestamp.toLocaleTimeString([], {
     hour: 'numeric',
     minute: '2-digit',

@@ -43,7 +43,8 @@ export const useChatbotWidget = (): IChatbotWidgetHook => {
   const handleVisibilityChange = (isOpen: boolean): void => {
     if (typeof document === 'undefined') return
     if (isOpen) {
-      lastFocusedEl.value = document.activeElement
+      const { activeElement } = document
+      lastFocusedEl.value = activeElement instanceof HTMLElement ? activeElement : null
       return
     }
     restoreFocus()

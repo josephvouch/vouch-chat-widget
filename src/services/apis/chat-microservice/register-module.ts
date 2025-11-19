@@ -5,14 +5,14 @@
 
 import type { AxiosResponse } from 'axios'
 
-import coreServiceApi, { handleApiError } from './index'
+import chatMicroserviceApi, { handleApiError } from './index'
 import type { IRegisterWidgetRequest, IRegisterWidgetResponse } from './types'
 
 /**
  * API Path Constants
  */
 const API_PATHS = {
-  REGISTERS: '/api/v3/widget/registers',
+  REGISTERS: '/api/v1/chat-widgets/customers/register',
 } as const
 
 /**
@@ -26,7 +26,7 @@ export const registerModule = {
    */
   register: async (data: IRegisterWidgetRequest): Promise<IRegisterWidgetResponse> => {
     try {
-      const response: AxiosResponse<IRegisterWidgetResponse> = await coreServiceApi.post(
+      const response: AxiosResponse<IRegisterWidgetResponse> = await chatMicroserviceApi.post(
         API_PATHS.REGISTERS,
         data,
       )

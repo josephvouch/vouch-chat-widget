@@ -10,7 +10,12 @@ declare module '*.vue' {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-interface ImportMetaEnv {}
+interface ImportMetaEnv {
+  readonly VITE_CHAT_MICROSERVICE_HOST?: string
+  readonly VITE_SOCKET_SERVER_URL?: string
+  readonly VITE_RECAPTCHA_SITE_KEY?: string
+  readonly VITE_WIDGET_API_KEY?: string
+}
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface ImportMeta {

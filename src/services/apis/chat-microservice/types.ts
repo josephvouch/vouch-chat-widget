@@ -1,5 +1,5 @@
 /**
- * Core Service API Types
+ * Chat Microservice API Types
  */
 
 /**
@@ -43,6 +43,7 @@ export interface IMessage {
  */
 export interface IRetrieveLastMessagesParams {
   limit?: number
+  latestChatMessageId?: string
 }
 
 /**
@@ -71,6 +72,7 @@ export interface ISendMessageRequest {
 export interface IRegisterWidgetRequest {
   customerGeneratedCode: string
   customerTimezone?: number | null
+  customerId?: string | null
   recaptchaToken: string
 }
 
@@ -79,6 +81,7 @@ export interface IRegisterWidgetRequest {
  */
 export interface IRegisterWidgetData {
   customerId: string
+  sessionId: string
 }
 
 /**
@@ -89,6 +92,21 @@ export interface IRegisterWidgetResponse {
   message: string
   data: IRegisterWidgetData
 }
+
+/**
+ * Token Module Types
+ */
+
+export interface IRefreshTokenRequest {
+  customerId: string
+  sessionId: string
+}
+
+export interface IRefreshTokenData {
+  customerId: string
+}
+
+export type IRefreshTokenResponse = IApiResponse<IRefreshTokenData>
 
 /**
  * Widget Styles Module Types

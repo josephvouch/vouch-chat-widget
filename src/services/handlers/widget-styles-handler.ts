@@ -4,7 +4,7 @@
  */
 
 import { useWidgetStylesStore } from '../../stores/widget-styles'
-import { widgetStylesModule } from '../apis/core/widget-styles-module'
+import { widgetStylesModule } from '../apis/chat-microservice/widget-styles-module'
 
 /**
  * Fetch widget styles from API and set in store

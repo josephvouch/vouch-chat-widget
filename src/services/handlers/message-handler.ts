@@ -1,175 +1,100 @@
-import { messagingModule } from '../apis/core/messaging-module'
-import type { ISendMessageRequest } from '../apis/core/types'
+import { useChatbotStore } from '../../stores/chatbot'
+import { messagingModule } from '../apis/chat-microservice/messaging-module'
+import type { IMessage } from '../apis/chat-microservice/types'
 
-export const STREAMING_EVENT_AI_ANSWER = 'ai-answer'
-export const STREAMING_EVENT_TOKEN_USAGE = 'token-usage'
-export const STREAMING_EVENT_HTTP_ERROR = 'http-error'
-export const STREAMING_EVENT_CHAIN_RESULT = 'chain-result'
-export const STREAMING_EVENT_IS_UNDERSTAND = 'is-understand'
-export const STREAMING_EVENT_LLM_CONVO_MEMORY = 'llm-convo-memory'
-
-export interface IMessageStreamEvent<T = unknown> {
-  event: string
-  data: T
-  raw: string
+export {
+  type IMessageStreamCallbacks,
+  type IMessageStreamController,
+  type IMessageStreamEvent,
+  sendMessageWithStream,
+  STREAMING_EVENT_AI_ANSWER,
+  STREAMING_EVENT_CHAIN_RESULT,
+  STREAMING_EVENT_HTTP_ERROR,
+  STREAMING_EVENT_IS_UNDERSTAND,
+  STREAMING_EVENT_LLM_CONVO_MEMORY,
+  STREAMING_EVENT_TOKEN_USAGE,
+} from './message-stream-handler'
+type HistoryLoadMode = 'replace' | 'prepend'
+interface IHistoryLoadResult {
+  success: boolean
+  hasMore: boolean
 }
 
-export interface IMessageStreamCallbacks {
-  onOpen?: () => void
-  onEvent?: (payload: IMessageStreamEvent) => void
-  onError?: (error: unknown) => void
-  onComplete?: () => void
+const HISTORY_PAGE_LIMIT = 20 as const
+
+const sortMessagesChronologically = (messages: IMessage[]): IMessage[] => {
+  return [...messages].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  )
 }
 
-export interface IMessageStreamController {
-  cancel: () => void
+const determineFromMe = (message: IMessage): boolean => {
+  if (typeof message.fromMe === 'boolean') {
+    return message.fromMe
+  }
+
+  const sender = message.senderBy?.toLowerCase?.()
+  if (!sender) {
+    return false
+  }
+
+  return sender === 'customer' || sender === 'you'
 }
 
-const COMMENT_PREFIX = ':'
+const normalizeMessages = (messages: IMessage[]): IMessage[] => {
+  return messages.map((message) => ({
+    ...message,
+    fromMe: determineFromMe(message),
+  }))
+}
 
-const parseSseChunk = (chunk: string): IMessageStreamEvent | null => {
-  const trimmed = chunk.trim()
-  if (!trimmed.length || trimmed.startsWith(COMMENT_PREFIX)) {
-    return null
-  }
-
-  const lines = trimmed.replace(/\r/g, '').split('\n')
-  let eventName = 'message'
-  const dataLines: string[] = []
-
-  for (const line of lines) {
-    if (line.startsWith('event:')) {
-      eventName = line.slice('event:'.length).trim() || 'message'
-    } else if (line.startsWith('data:')) {
-      dataLines.push(line.slice('data:'.length).trim())
-    }
-  }
-
-  if (dataLines.length === 0) {
-    return {
-      event: eventName,
-      data: null,
-      raw: trimmed,
-    }
-  }
-
-  const joinedData = dataLines.join('\n')
-  let parsed: unknown = joinedData
-
+const retrieveAndStoreMessages = async (mode: HistoryLoadMode): Promise<IHistoryLoadResult> => {
   try {
-    parsed = joinedData.length ? JSON.parse(joinedData) : null
-  } catch {
-    parsed = joinedData
-  }
+    const chatbotStore = useChatbotStore()
+    const latestChatMessageId =
+      mode === 'prepend' ? chatbotStore.latestChatMessageId : null
+    const response = await messagingModule.retrieveLastMessages(
+      latestChatMessageId
+        ? { latestChatMessageId, limit: HISTORY_PAGE_LIMIT }
+        : { limit: HISTORY_PAGE_LIMIT },
+    )
+    const payload = response.data ?? []
 
-  return {
-    event: eventName,
-    data: parsed,
-    raw: trimmed,
+    if (!payload.length) {
+      return { success: true, hasMore: false }
+    }
+
+    const normalizedMessages = normalizeMessages(payload)
+    const orderedMessages = sortMessagesChronologically(normalizedMessages)
+
+    if (mode === 'replace') {
+      chatbotStore.setMessages(orderedMessages)
+    } else {
+      chatbotStore.prependMessages(orderedMessages)
+    }
+
+    const latestIdFromResponse = payload[payload.length - 1]?._id ?? null
+    const latestId = latestIdFromResponse ?? chatbotStore.latestChatMessageId
+    if (latestId) {
+      chatbotStore.setLatestChatMessageId(latestId)
+    }
+
+    const hasMore =
+      mode === 'replace'
+        ? true
+        : orderedMessages.length === HISTORY_PAGE_LIMIT
+
+    return { success: true, hasMore }
+  } catch (error) {
+    console.error('[message-handler] Failed to retrieve messages:', error)
+    return { success: false, hasMore: false }
   }
 }
 
-/**
- * Send a message to the core API and consume the SSE response stream.
- * Returns a controller that allows the caller to cancel the stream.
- */
-export async function sendMessageWithStream(
-  payload: ISendMessageRequest,
-  callbacks: IMessageStreamCallbacks = {},
-): Promise<IMessageStreamController> {
-  const abortController = new AbortController()
-  const response = await messagingModule.sendMessage(payload, abortController.signal)
+export async function loadInitialChatHistory(): Promise<IHistoryLoadResult> {
+  return retrieveAndStoreMessages('replace')
+}
 
-  if (!response.body) {
-    throw new Error('The messaging endpoint did not return a streamable response body')
-  }
-
-  callbacks.onOpen?.()
-
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder('utf-8')
-  let buffer = ''
-  let isActive = true
-
-  const cancel = (): void => {
-    if (!isActive) return
-    isActive = false
-    abortController.abort()
-    void reader.cancel().catch(() => {
-      // Swallow cancellation errors as they are expected when aborting
-    })
-  }
-
-  const flushBuffer = (final = false): void => {
-    if (!buffer.length) {
-      return
-    }
-
-    const segments = buffer.split('\n\n')
-    if (!final) {
-      buffer = segments.pop() ?? ''
-    } else {
-      buffer = ''
-    }
-
-    for (const segment of segments) {
-      const event = parseSseChunk(segment)
-      if (!event) {
-        continue
-      }
-
-      callbacks.onEvent?.(event)
-
-      if (event.event === STREAMING_EVENT_HTTP_ERROR) {
-        const error =
-          typeof event.data === 'string'
-            ? new Error(event.data)
-            : event.data && typeof event.data === 'object'
-              ? new Error(
-                  'message' in (event.data as Record<string, unknown>) &&
-                    typeof (event.data as Record<string, unknown>).message === 'string'
-                    ? String((event.data as Record<string, unknown>).message)
-                    : 'Streaming request failed',
-                )
-              : new Error('Streaming request failed')
-
-        callbacks.onError?.(error)
-        cancel()
-        return
-      }
-    }
-  }
-
-  const readStream = async (): Promise<void> => {
-    try {
-      while (isActive) {
-        const { value, done } = await reader.read()
-
-        if (done) {
-          buffer += decoder.decode()
-          flushBuffer(true)
-          break
-        }
-
-        buffer += decoder.decode(value, { stream: true })
-        flushBuffer()
-      }
-
-      if (isActive) {
-        callbacks.onComplete?.()
-      }
-    } catch (error) {
-      if (isActive) {
-        callbacks.onError?.(error)
-      }
-    } finally {
-      cancel()
-    }
-  }
-
-  void readStream()
-
-  return {
-    cancel,
-  }
+export async function loadOlderChatHistory(): Promise<IHistoryLoadResult> {
+  return retrieveAndStoreMessages('prepend')
 }

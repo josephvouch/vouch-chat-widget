@@ -101,10 +101,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 import IconAttachment from '@/assets/icon-attachment.vue'
 import IconSend from '@/assets/icon-send.vue'
+import { emitTypingEvent } from '@/services/socket'
 import { useWidgetStylesStore } from '@/stores/widget-styles'
 
 const props = defineProps<{
@@ -123,6 +124,8 @@ const fontsStyles = computed(() => widgetStylesStore.getFontsStyles)
 
 const composerEl = ref<HTMLInputElement | null>(null)
 const draft = ref('')
+const isTyping = ref(false)
+let typingTimeout: ReturnType<typeof setTimeout> | null = null
 
 const composerDisabled = computed<boolean>(
   () => props.loading || !draft.value.trim(),
@@ -167,11 +170,47 @@ const handleSubmit = (): void => {
   if (!text) return
   draft.value = ''
   emit('send', { text })
+  if (isTyping.value) {
+    emitTypingEvent({ conversationId: 'chat-widget', isTyping: false, source: 'customer' })
+    isTyping.value = false
+  }
 }
 
 const handleAttachment = (): void => {
   // TODO: Implement attachment functionality
   console.info('[ChatbotFooterInput] Attachment clicked')
+}
+
+const updateTypingState = (): void => {
+  const trimmed = draft.value.trim()
+
+  if (!trimmed) {
+    if (isTyping.value) {
+      emitTypingEvent({ conversationId: 'chat-widget', isTyping: false, source: 'customer' })
+      isTyping.value = false
+    }
+    if (typingTimeout) {
+      clearTimeout(typingTimeout)
+      typingTimeout = null
+    }
+    return
+  }
+
+  if (!isTyping.value) {
+    emitTypingEvent({ conversationId: 'chat-widget', isTyping: true, source: 'customer' })
+    isTyping.value = true
+  }
+
+  if (typingTimeout) {
+    clearTimeout(typingTimeout)
+  }
+  typingTimeout = setTimeout(() => {
+    if (isTyping.value) {
+      emitTypingEvent({ conversationId: 'chat-widget', isTyping: false, source: 'customer' })
+      isTyping.value = false
+    }
+    typingTimeout = null
+  }, 3000)
 }
 
 watch(
@@ -183,6 +222,24 @@ watch(
   },
   { immediate: true },
 )
+
+watch(
+  () => draft.value,
+  () => {
+    updateTypingState()
+  },
+)
+
+onBeforeUnmount(() => {
+  if (typingTimeout) {
+    clearTimeout(typingTimeout)
+    typingTimeout = null
+  }
+  if (isTyping.value) {
+    emitTypingEvent({ conversationId: 'chat-widget', isTyping: false, source: 'customer' })
+    isTyping.value = false
+  }
+})
 </script>
 
 <style scoped>

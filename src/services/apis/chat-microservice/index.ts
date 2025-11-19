@@ -1,20 +1,20 @@
 /**
- * Core Service API Client
+ * Chat Microservice API Client
  * Axios instance with authentication and error handling
  */
 
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios'
 import axios from 'axios'
 
-import { CORE_SERVICE_HOST, IS_DEV } from '../../../config/constants'
+import { CHAT_MICROSERVICE_HOST, IS_DEV } from '../../../config/constants'
 import { useUsersStore } from '../../../stores/users'
 import type { IApiError, IApiResponse } from './types'
 
 /**
  * Create axios instance with base configuration
  */
-const coreServiceApi: AxiosInstance = axios.create({
-  baseURL: CORE_SERVICE_HOST,
+const chatMicroserviceApi: AxiosInstance = axios.create({
+  baseURL: CHAT_MICROSERVICE_HOST,
   timeout: 30000,
   withCredentials: true,
   headers: {
@@ -26,7 +26,7 @@ const coreServiceApi: AxiosInstance = axios.create({
  * Request interceptor for authentication
  * Adds widget API key to all requests
  */
-coreServiceApi.interceptors.request.use(
+chatMicroserviceApi.interceptors.request.use(
   (config) => {
     // Add widget API key to headers
     const usersStore = useUsersStore()
@@ -43,7 +43,7 @@ coreServiceApi.interceptors.request.use(
     // }
 
     if (IS_DEV) {
-      console.info('[Core Service API] Request:', {
+      console.info('[Chat Microservice API] Request:', {
         method: config.method?.toUpperCase(),
         url: config.url,
         data: config.data,
@@ -57,7 +57,7 @@ coreServiceApi.interceptors.request.use(
   },
   (error: AxiosError) => {
     if (IS_DEV) {
-      console.error('[Core Service API] Request error:', error)
+      console.error('[Chat Microservice API] Request error:', error)
     }
     return Promise.reject(error)
   },
@@ -66,10 +66,10 @@ coreServiceApi.interceptors.request.use(
 /**
  * Response interceptor for error handling
  */
-coreServiceApi.interceptors.response.use(
+chatMicroserviceApi.interceptors.response.use(
   (response: AxiosResponse) => {
     if (IS_DEV) {
-      console.info('[Core Service API] Response:', {
+      console.info('[Chat Microservice API] Response:', {
         status: response.status,
         url: response.config.url,
         data: response.data,
@@ -79,7 +79,7 @@ coreServiceApi.interceptors.response.use(
   },
   (error: AxiosError<IApiError>) => {
     if (IS_DEV) {
-      console.error('[Core Service API] Response error:', {
+      console.error('[Chat Microservice API] Response error:', {
         status: error.response?.status,
         url: error.config?.url,
         error: error.response?.data || error.message,
@@ -89,7 +89,7 @@ coreServiceApi.interceptors.response.use(
     // Handle specific error cases
     if (error.response?.status === 401) {
       // TODO: Implement auth refresh or redirect to login
-      console.warn('[Core Service API] Unauthorized - token may be expired')
+      console.warn('[Chat Microservice API] Unauthorized - token may be expired')
     }
 
     return Promise.reject(error)
@@ -110,6 +110,7 @@ export function extractApiData<T>(response: AxiosResponse<IApiResponse<T>>): T {
  * Helper function to handle API errors
  */
 export function handleApiError(error: unknown): IApiError {
+  // eslint-disable-next-line import/no-named-as-default-member
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError<IApiError>
     return (
@@ -126,4 +127,4 @@ export function handleApiError(error: unknown): IApiError {
   }
 }
 
-export default coreServiceApi
+export default chatMicroserviceApi

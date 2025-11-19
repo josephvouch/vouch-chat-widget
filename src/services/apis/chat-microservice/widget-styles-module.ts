@@ -5,14 +5,15 @@
 
 import type { AxiosResponse } from 'axios'
 
-import coreServiceApi, { handleApiError } from './index'
+import chatMicroserviceApi, { handleApiError } from './index'
 import type { IGetWidgetStylesResponse } from './types'
+import { handle401Wrapper } from './wrappers/handle-401-wrapper'
 
 /**
  * API Path Constants
  */
 const API_PATHS = {
-  BASE: '/api/v3/widget/styles',
+  BASE: '/api/v1/chat-widget-config/styles',
 } as const
 
 /**
@@ -25,9 +26,11 @@ export const widgetStylesModule = {
    */
   getStyles: async (): Promise<IGetWidgetStylesResponse> => {
     try {
-      const response: AxiosResponse<IGetWidgetStylesResponse> =
-        await coreServiceApi.get(API_PATHS.BASE)
-      return response.data
+      return await handle401Wrapper(async () => {
+        const response: AxiosResponse<IGetWidgetStylesResponse> =
+          await chatMicroserviceApi.get(API_PATHS.BASE)
+        return response.data
+      })
     } catch (error) {
       const apiError = handleApiError(error)
       throw apiError

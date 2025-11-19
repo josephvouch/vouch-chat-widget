@@ -140,7 +140,7 @@ onUnmounted((): void => {
   bottom: 80px;
   right: 24px;
   max-height: 810px;
-  width: 30em;
+  width: 27em;
   height: calc(100% - 100px);
   display: flex;
   flex-direction: column;

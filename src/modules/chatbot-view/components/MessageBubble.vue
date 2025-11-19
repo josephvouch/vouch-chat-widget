@@ -20,6 +20,16 @@
        </div>
 
       <div :class="bubbleWrapperClass">
+        <!-- Sender label ('You' for own messages only) -->
+        <p
+          v-if="message.fromMe"
+          class="vc3-mb-1 vc3-text-xs vc3-font-medium vc3-text-slate-600"
+          :class="nameAlignmentClass"
+          :style="dateStyles"
+        >
+          You
+        </p>
+
         <div
           class="message-bubble"
           :style="bubbleStyles"
@@ -32,6 +42,7 @@
               {{ message.text }}
             </p>
           </template>
+          <TypingIndicator v-else-if="isTypingIndicator" />
           <MarkdownText
             v-else
             :content="message.text"
@@ -56,7 +67,8 @@
 import { computed } from 'vue'
 
 import MarkdownText from '@/components/MarkdownText.vue'
-import type { IMessage } from '@/services/apis/core/types'
+import TypingIndicator from '@/components/TypingIndicator.vue'
+import type { IMessage } from '@/services/apis/chat-microservice/types'
 import { useWidgetStylesStore } from '@/stores/widget-styles'
 
 interface IProps {
@@ -68,6 +80,9 @@ const props = defineProps<IProps>()
 const widgetStylesStore = useWidgetStylesStore()
 const conversationStyles = computed(() => widgetStylesStore.getConversationStyles)
 const fontsStyles = computed(() => widgetStylesStore.getFontsStyles)
+const isTypingIndicator = computed(
+  () => props.message.msgType === 'typing-indicator',
+)
 
 // Wrapper class for overall alignment
 const wrapperClass = computed<string>(() => {
@@ -133,6 +148,13 @@ const dateStyles = computed<Record<string, string>>(() => {
   return {
     fontFamily: `'${fontFamily}', sans-serif`,
   }
+})
+
+const nameAlignmentClass = computed<string>(() => {
+  if (props.message.fromMe) {
+    return 'vc3-text-right'
+  }
+  return 'vc3-text-left'
 })
 
 // Format timestamp

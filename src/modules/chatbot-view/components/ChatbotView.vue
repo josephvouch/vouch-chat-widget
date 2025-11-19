@@ -6,6 +6,7 @@
     <!-- Fixed Header -->
     <ChatbotHeader
       :title-id="titleId"
+      :show-welcome="showWelcome"
       @close="handleClose"
     />
 
@@ -14,6 +15,8 @@
     <ChatbotBodyMessage
       v-else
       :messages="props.messages"
+      :can-request-history="canRequestHistory"
+      @request-history="handleLoadOlderMessages"
     />
 
     <!-- Fixed Footer -->
@@ -35,8 +38,13 @@
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import type { IMessage } from '@/services/apis/core/types'
+import type { IMessage } from '@/services/apis/chat-microservice/types'
+import {
+  loadInitialChatHistory,
+  loadOlderChatHistory,
+} from '@/services/handlers/message-handler'
 import { doUserRegister } from '@/services/handlers/register-handler'
+import { doUserRefreshToken } from '@/services/handlers/token-handler'
 import { useUsersStore } from '@/stores/users'
 import { initializeRecaptcha } from '@/utils/util-recaptcha'
 
@@ -60,8 +68,14 @@ const emit = defineEmits<{
 }>()
 
 const usersStore = useUsersStore()
-const { isRegistered } = storeToRefs(usersStore)
+const { isRegistered, customerId } = storeToRefs(usersStore)
 const isRegistering = ref(false)
+const isHistoryLoading = ref(false)
+const hasLoadedHistory = ref(false)
+const hasMoreHistory = ref(true)
+const canRequestHistory = computed(
+  () => hasMoreHistory.value && !isHistoryLoading.value,
+)
 
 initializeRecaptcha()
 
@@ -77,8 +91,62 @@ const handleSend = (payload: { text: string }): void => {
 
 const showWelcome = computed<boolean>(() => !isRegistered.value)
 
-onMounted((): void => {
+const loadChatHistory = async (mode: 'initial' | 'older'): Promise<boolean> => {
+  if (isHistoryLoading.value) return false
+  if (mode === 'initial') {
+    hasLoadedHistory.value = false
+    hasMoreHistory.value = true
+  }
+  if (mode === 'older' && (!hasLoadedHistory.value || !hasMoreHistory.value)) {
+    return false
+  }
+
+  isHistoryLoading.value = true
+
+  try {
+    const loader = mode === 'initial' ? loadInitialChatHistory : loadOlderChatHistory
+    const result = await loader()
+    if (!result.success) {
+      const context =
+        mode === 'initial' ? 'load chat history' : 'load older chat history'
+      console.error(`[ChatbotView] Failed to ${context}`)
+      return false
+    }
+
+    if (mode === 'initial') {
+      hasLoadedHistory.value = true
+      hasMoreHistory.value = result.hasMore
+    } else if (!result.hasMore) {
+      hasMoreHistory.value = false
+    }
+
+    return true
+  } catch (error) {
+    const context =
+      mode === 'initial'
+        ? 'loading chat history'
+        : 'loading older chat history'
+    console.error(`[ChatbotView] Unexpected error ${context}`, error)
+    return false
+  } finally {
+    isHistoryLoading.value = false
+  }
+}
+
+onMounted(async (): Promise<void> => {
   initializeRecaptcha()
+  if (customerId.value !== null) {
+    try {
+      const success = await doUserRefreshToken()
+      if (!success) {
+        console.error('[ChatbotView] Failed to refresh user token on mount')
+      } else {
+        await loadChatHistory('initial')
+      }
+    } catch (error) {
+      console.error('[ChatbotView] Unexpected error refreshing user token on mount', error)
+    }
+  }
   emit('ready')
 })
 
@@ -86,14 +154,20 @@ const handleCtaClick = async (): Promise<void> => {
   if (isRegistering.value) return
 
   isRegistering.value = true
-  const success = await doUserRegister()
+  const success = await doUserRegister(null)
   isRegistering.value = false
 
   if (success) {
+    await loadChatHistory('initial')
     emit('cta-click')
   } else {
     console.error('[ChatbotView] Failed to register user from welcome CTA')
   }
+}
+
+const handleLoadOlderMessages = async (): Promise<void> => {
+  if (!isRegistered.value) return
+  await loadChatHistory('older')
 }
 </script>
 
