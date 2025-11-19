@@ -174,5 +174,11 @@ export default [
         }
       ]
     }
+  },
+  {
+    files: ['**/__tests__/**/*.ts', '**/__tests__/**/*.spec.ts', '**/*.spec.ts', '**/*.test.ts'],
+    rules: {
+      'security/detect-object-injection': 'off'
+    }
   }
 ]

@@ -1,18 +1,22 @@
+import { createPinia, setActivePinia } from 'pinia'
 import type { Socket } from 'socket.io-client'
 import { io } from 'socket.io-client'
-import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useUsersStore } from '@/stores/users'
 
-import { disconnectSocketClient, getSocketClient, initSocketClient } from '../socket-client'
+import {
+  disconnectSocketClient,
+  getSocketClient,
+  initSocketClient
+} from '../socket-client'
 
 vi.mock('socket.io-client', () => ({
-  io: vi.fn(),
+  io: vi.fn()
 }))
 
 vi.mock('../socket-event-handlers', () => ({
-  registerSocketEventHandlers: vi.fn(() => vi.fn()),
+  registerSocketEventHandlers: vi.fn(() => vi.fn())
 }))
 
 describe('socket-client', () => {
@@ -33,8 +37,8 @@ describe('socket-client', () => {
       off: vi.fn(),
       io: {
         on: vi.fn(),
-        off: vi.fn(),
-      },
+        off: vi.fn()
+      }
     } as unknown as Partial<Socket>
 
     vi.mocked(io).mockReturnValue(mockSocket as Socket)
@@ -79,7 +83,7 @@ describe('socket-client', () => {
         reconnectionAttempts: 10,
         timeout: 20000,
         transports: ['websocket'],
-        withCredentials: true,
+        withCredentials: true
       })
     })
 
@@ -94,7 +98,7 @@ describe('socket-client', () => {
 
       const [[, options]] = vi.mocked(io).mock.calls
       expect(options?.auth).toMatchObject({
-        'x-widget-key': mockApiKey,
+        'x-widget-key': mockApiKey
       })
     })
 
@@ -129,8 +133,8 @@ describe('socket-client', () => {
       initSocketClient({
         options: {
           reconnectionAttempts: 5,
-          timeout: 10000,
-        },
+          timeout: 10000
+        }
       })
 
       const [[, options]] = vi.mocked(io).mock.calls
@@ -138,7 +142,7 @@ describe('socket-client', () => {
         reconnectionAttempts: 5,
         timeout: 10000,
         autoConnect: false,
-        reconnection: true,
+        reconnection: true
       })
     })
 
@@ -159,7 +163,9 @@ describe('socket-client', () => {
     })
 
     it('registers socket event handlers', async () => {
-      const { registerSocketEventHandlers } = await import('../socket-event-handlers')
+      const { registerSocketEventHandlers } = await import(
+        '../socket-event-handlers'
+      )
 
       initSocketClient()
 
@@ -173,14 +179,14 @@ describe('socket-client', () => {
 
       initSocketClient({
         options: {
-          auth: customAuth,
-        },
+          auth: customAuth
+        }
       })
 
       const [[, options]] = vi.mocked(io).mock.calls
       expect(options?.auth).toMatchObject({
         token: 'custom-token',
-        'x-widget-key': 'api-key-123',
+        'x-widget-key': 'api-key-123'
       })
     })
 
@@ -205,7 +211,7 @@ describe('socket-client', () => {
 
     it('throws error if socket not initialized', () => {
       expect(() => getSocketClient()).toThrow(
-        'Socket client has not been initialized. Call initSocketClient() first.',
+        'Socket client has not been initialized. Call initSocketClient() first.'
       )
     })
   })
@@ -213,7 +219,9 @@ describe('socket-client', () => {
   describe('disconnectSocketClient', () => {
     it('disconnects socket and cleans up handlers', async () => {
       const unregisterHandlers = vi.fn()
-      const { registerSocketEventHandlers } = await import('../socket-event-handlers')
+      const { registerSocketEventHandlers } = await import(
+        '../socket-event-handlers'
+      )
       vi.mocked(registerSocketEventHandlers).mockReturnValue(unregisterHandlers)
 
       initSocketClient()
