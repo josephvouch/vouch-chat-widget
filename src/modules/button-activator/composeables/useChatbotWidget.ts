@@ -56,7 +56,7 @@ export const useChatbotWidget = (): IChatbotWidgetHook => {
     (val) => {
       handleVisibilityChange(val)
     },
-    { immediate: true },
+    { immediate: true }
   )
 
   const handleGlobalShortcut = (event: KeyboardEvent): void => {

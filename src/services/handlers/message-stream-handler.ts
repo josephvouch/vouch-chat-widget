@@ -77,7 +77,7 @@ const parseSseChunk = (chunk: string): IMessageStreamEvent | null => {
  */
 export async function sendMessageWithStream(
   payload: ISendMessageRequest,
-  callbacks: IMessageStreamCallbacks = {},
+  callbacks: IMessageStreamCallbacks = {}
 ): Promise<IMessageStreamController> {
   const abortController = new AbortController()
   const response = await messagingModule.sendMessage(payload, abortController.signal)
@@ -129,9 +129,9 @@ export async function sendMessageWithStream(
             : event.data && typeof event.data === 'object'
               ? new Error(
                   'message' in (event.data as Record<string, unknown>) &&
-                    typeof (event.data as Record<string, unknown>).message === 'string'
+                  typeof (event.data as Record<string, unknown>).message === 'string'
                     ? String((event.data as Record<string, unknown>).message)
-                    : 'Streaming request failed',
+                    : 'Streaming request failed'
                 )
               : new Error('Streaming request failed')
 

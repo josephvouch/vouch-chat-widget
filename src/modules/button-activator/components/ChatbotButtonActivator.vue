@@ -3,31 +3,14 @@
     <button
       ref="buttonEl"
       type="button"
-      class="
-        chatbot-activator
-        vc3-pointer-events-auto
-        vc3-relative
-        vc3-flex
-        vc3-items-center
-        vc3-justify-center
-        vc3-rounded-full
-        vc3-shadow-lg
-        focus:vc3-outline-none
-        focus-visible:vc3-ring-2
-        focus-visible:vc3-ring-sky-500
-        focus-visible:vc3-ring-offset-2
-        hover:vc3-shadow-xl
-        hover:vc3--translate-y-0.5
-      "
+      class="chatbot-activator vc3-pointer-events-auto vc3-relative vc3-flex vc3-items-center vc3-justify-center vc3-rounded-full vc3-shadow-lg focus:vc3-outline-none focus-visible:vc3-ring-2 focus-visible:vc3-ring-sky-500 focus-visible:vc3-ring-offset-2 hover:vc3-shadow-xl hover:vc3--translate-y-0.5"
       :class="[
         hasIconURL
           ? 'vc3-bg-transparent vc3-overflow-hidden'
           : open
             ? 'vc3-bg-sky-600 vc3-text-white hover:vc3-bg-sky-500'
             : 'vc3-bg-white vc3-text-sky-600 hover:vc3-bg-sky-50',
-        reducedMotion
-          ? 'vc3-transition-none'
-          : 'vc3-transition vc3-duration-200 vc3-ease-out',
+        reducedMotion ? 'vc3-transition-none' : 'vc3-transition vc3-duration-200 vc3-ease-out',
         {
           'chatbot-activator--loading': !hasLoaded && !reducedMotion,
           'chatbot-activator--loaded': hasLoaded && !reducedMotion,
@@ -51,25 +34,17 @@
             alt="Open chat icon"
             class="chatbot-activator-icon vc3-absolute vc3-inset-0 vc3-h-full vc3-w-full vc3-object-cover"
             :class="{ 'chatbot-activator-icon--visible': !open }"
-          >
+          />
           <!-- Close icon (visible when open) -->
           <img
             :src="launcherStyles.closeIconURL"
             alt="Close chat icon"
             class="chatbot-activator-icon vc3-absolute vc3-inset-0 vc3-h-full vc3-w-full vc3-object-cover"
             :class="{ 'chatbot-activator-icon--visible': open }"
-          >
+          />
         </template>
         <!-- Show default SVG icon as fallback -->
-        <svg
-          v-else
-          aria-hidden="true"
-          class="vc3-h-6 vc3-w-6"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          viewBox="0 0 24 24"
-        >
+        <svg v-else aria-hidden="true" class="vc3-h-6 vc3-w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
           <path
             d="
               M8.25 9.75h7.5m-7.5 3h4.5
@@ -84,9 +59,7 @@
           />
         </svg>
       </slot>
-      <span v-if="unreadCount > 0" class="chatbot-activator-badge">{{
-        unreadCount
-      }}</span>
+      <span v-if="unreadCount > 0" class="chatbot-activator-badge">{{ unreadCount }}</span>
     </button>
   </div>
 </template>
@@ -140,9 +113,7 @@ const launcherStyles = computed(() => widgetStylesStore.getLauncherStyles)
 const buttonEl = ref<HTMLButtonElement | null>(null)
 const hasLoaded = ref(false)
 const isAnimating = ref(false)
-const reducedMotion =
-  typeof window !== 'undefined' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const buttonLabel = computed<string>(() => {
   if (props.open) return 'Close chat'

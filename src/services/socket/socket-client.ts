@@ -20,8 +20,7 @@ function resolveSocketEndpoint(rawUrl: string): ISocketEndpoint {
   try {
     const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
     const parsed = new URL(rawUrl, base)
-    const normalizedPath =
-      parsed.pathname && parsed.pathname !== '/' ? parsed.pathname.replace(/\/$/, '') : ''
+    const normalizedPath = parsed.pathname && parsed.pathname !== '/' ? parsed.pathname.replace(/\/$/, '') : ''
 
     return {
       url: parsed.origin,

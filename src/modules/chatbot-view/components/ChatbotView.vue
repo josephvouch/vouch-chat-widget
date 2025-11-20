@@ -1,14 +1,7 @@
 <template>
-  <div
-    class="chatbot-view"
-    :aria-labelledby="titleId"
-  >
+  <div class="chatbot-view" :aria-labelledby="titleId">
     <!-- Fixed Header -->
-    <ChatbotHeader
-      :title-id="titleId"
-      :show-welcome="showWelcome"
-      @close="handleClose"
-    />
+    <ChatbotHeader :title-id="titleId" :show-welcome="showWelcome" @close="handleClose" />
 
     <!-- Scrollable Body -->
     <ChatbotBodyWelcome v-if="showWelcome" />
@@ -20,17 +13,8 @@
     />
 
     <!-- Fixed Footer -->
-    <ChatbotFooterWelcome
-      v-if="showWelcome"
-      :loading="isRegistering"
-      @cta-click="handleCtaClick"
-    />
-    <ChatbotFooterInput
-      v-else
-      :open="props.open"
-      :loading="props.loading"
-      @send="handleSend"
-    />
+    <ChatbotFooterWelcome v-if="showWelcome" :loading="isRegistering" @cta-click="handleCtaClick" />
+    <ChatbotFooterInput v-else :open="props.open" :loading="props.loading" @send="handleSend" />
   </div>
 </template>
 
@@ -39,10 +23,7 @@ import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import type { IMessage } from '@/services/apis/chat-microservice/types'
-import {
-  loadInitialChatHistory,
-  loadOlderChatHistory,
-} from '@/services/handlers/message-handler'
+import { loadInitialChatHistory, loadOlderChatHistory } from '@/services/handlers/message-handler'
 import { doUserRegister } from '@/services/handlers/register-handler'
 import { doUserRefreshToken } from '@/services/handlers/token-handler'
 import { useUsersStore } from '@/stores/users'
@@ -73,9 +54,7 @@ const isRegistering = ref(false)
 const isHistoryLoading = ref(false)
 const hasLoadedHistory = ref(false)
 const hasMoreHistory = ref(true)
-const canRequestHistory = computed(
-  () => hasMoreHistory.value && !isHistoryLoading.value,
-)
+const canRequestHistory = computed(() => hasMoreHistory.value && !isHistoryLoading.value)
 
 initializeRecaptcha()
 
@@ -107,8 +86,7 @@ const loadChatHistory = async (mode: 'initial' | 'older'): Promise<boolean> => {
     const loader = mode === 'initial' ? loadInitialChatHistory : loadOlderChatHistory
     const result = await loader()
     if (!result.success) {
-      const context =
-        mode === 'initial' ? 'load chat history' : 'load older chat history'
+      const context = mode === 'initial' ? 'load chat history' : 'load older chat history'
       console.error(`[ChatbotView] Failed to ${context}`)
       return false
     }
@@ -122,10 +100,7 @@ const loadChatHistory = async (mode: 'initial' | 'older'): Promise<boolean> => {
 
     return true
   } catch (error) {
-    const context =
-      mode === 'initial'
-        ? 'loading chat history'
-        : 'loading older chat history'
+    const context = mode === 'initial' ? 'loading chat history' : 'loading older chat history'
     console.error(`[ChatbotView] Unexpected error ${context}`, error)
     return false
   } finally {
@@ -202,5 +177,4 @@ const handleLoadOlderMessages = async (): Promise<void> => {
   /* Prevent layout shifts */
   overflow: hidden;
 }
-
 </style>

@@ -4,8 +4,7 @@ import { defineConfig } from 'vite'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const resolvePath = (dir: string): string =>
-  path.resolve(path.dirname(fileURLToPath(import.meta.url)), dir)
+const resolvePath = (dir: string): string => path.resolve(path.dirname(fileURLToPath(import.meta.url)), dir)
 
 // https://vite.dev/config/
 export default defineConfig({

@@ -64,5 +64,5 @@ export const useUsersStore = defineStore(
     persist: {
       key: 'vc_data',
     },
-  },
+  }
 )

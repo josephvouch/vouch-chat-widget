@@ -1,24 +1,13 @@
 <template>
-  <div
-    class="chatbot-body-welcome vc3-flex-1 vc3-min-h-0 vc3-overflow-y-auto vc3-px-4 vc3-py-6"
-    :style="bodyStyles"
-  >
+  <div class="chatbot-body-welcome vc3-flex-1 vc3-min-h-0 vc3-overflow-y-auto vc3-px-4 vc3-py-6" :style="bodyStyles">
     <!-- If greetings exist, show them as left-aligned message bubbles -->
     <template v-if="hasGreetings">
       <div class="vc3-flex vc3-h-full vc3-flex-col vc3-justify-start vc3-gap-3">
-        <div
-          v-for="(greeting, index) in greetings"
-          :key="`welcome-greeting-bubble-${index}`"
-          class="vc3-flex vc3-items-start vc3-gap-2"
-        >
+        <div v-for="(greeting, index) in greetings" :key="`welcome-greeting-bubble-${index}`" class="vc3-flex vc3-items-start vc3-gap-2">
           <!-- Avatar only for the first bubble, keep alignment for the rest -->
           <div class="vc3-flex-shrink-0">
             <template v-if="index === 0 && avatarUrl">
-              <img
-                :src="avatarUrl"
-                :alt="`${headerTitle} avatar`"
-                class="vc3-h-8 vc3-w-8 vc3-rounded-full vc3-object-cover"
-              />
+              <img :src="avatarUrl" :alt="`${headerTitle} avatar`" class="vc3-h-8 vc3-w-8 vc3-rounded-full vc3-object-cover" />
             </template>
             <template v-else>
               <span class="vc3-inline-block vc3-h-8 vc3-w-8" />
@@ -26,10 +15,7 @@
           </div>
 
           <div>
-            <p
-              class="vc3-inline-block vc3-max-w-[18rem] vc3-text-sm vc3-font-medium vc3-px-3 vc3-py-2"
-              :style="leftBubbleStyles"
-            >
+            <p class="vc3-inline-block vc3-max-w-[18rem] vc3-text-sm vc3-font-medium vc3-px-3 vc3-py-2" :style="leftBubbleStyles">
               {{ greeting }}
             </p>
           </div>
@@ -40,10 +26,7 @@
     <!-- If greetings are empty, fall back to the original welcome hero layout -->
     <template v-else>
       <div class="vc3-flex vc3-h-full vc3-flex-col vc3-items-center vc3-justify-center vc3-gap-6 vc3-text-center">
-        <div
-          v-if="greetings.length > 0"
-          class="vc3-flex vc3-flex-col vc3-gap-2"
-        >
+        <div v-if="greetings.length > 0" class="vc3-flex vc3-flex-col vc3-gap-2">
           <p
             v-for="(greeting, index) in greetings"
             :key="`welcome-greeting-${index}`"
@@ -54,10 +37,7 @@
           </p>
         </div>
 
-        <div
-          v-if="avatarUrl"
-          class="vc3-flex vc3-items-center vc3-justify-center"
-        >
+        <div v-if="avatarUrl" class="vc3-flex vc3-items-center vc3-justify-center">
           <img
             :src="avatarUrl"
             :alt="`${headerTitle} welcome illustration`"
@@ -65,18 +45,11 @@
           />
         </div>
 
-        <p
-          v-if="welcomePhrase"
-          class="vc3-text-base vc3-font-semibold"
-          :style="welcomePhraseStyles"
-        >
+        <p v-if="welcomePhrase" class="vc3-text-base vc3-font-semibold" :style="welcomePhraseStyles">
           {{ welcomePhrase }}
         </p>
 
-        <p
-          class="vc3-text-sm vc3-text-slate-600"
-          :style="nameStyles"
-        >
+        <p class="vc3-text-sm vc3-text-slate-600" :style="nameStyles">
           {{ headerTitle }}
         </p>
       </div>

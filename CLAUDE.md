@@ -11,6 +11,7 @@ This is the **web-fe-chat-widget-v3** - a Vue 3 + TypeScript chat widget for the
 ## Common Commands
 
 ### Development
+
 ```bash
 pnpm install              # Install dependencies (sync with pnpm-lock.yaml)
 pnpm dev                  # Start Vite dev server with HMR on default port
@@ -20,6 +21,7 @@ pnpm format               # Format code with Prettier
 ```
 
 ### Building
+
 ```bash
 pnpm build                # TypeScript compile + production build (main app)
 pnpm build:widget-activator   # Build activator IIFE bundle (dist/activator/)
@@ -30,6 +32,7 @@ pnpm preview              # Serve production build locally
 ```
 
 ### Testing
+
 Currently no automated test suite is configured. Manual validation via `pnpm preview` is the current approach.
 
 ## Multi-Build Architecture
@@ -37,11 +40,13 @@ Currently no automated test suite is configured. Manual validation via `pnpm pre
 This project uses **three separate Vite configurations** to support different deployment scenarios:
 
 ### 1. Main Development App (`vite.config.ts`)
+
 - Default configuration for `pnpm dev`
 - Full Vue 3 app with router for rapid development
 - Routes: `/` (bot view), `/preview` (widget preview), `/panel` (panel-only)
 
 ### 2. Widget Activator IIFE Bundle (`vite.activator.config.ts`)
+
 - Entry: `src/widget/shell.ts`
 - Output: `dist/activator/app.js` + `app.css` (single-file IIFE bundle)
 - Bundles Vue, Pinia, and all dependencies into one file
@@ -51,6 +56,7 @@ This project uses **three separate Vite configurations** to support different de
 - Configuration via `data-src` attribute on mount element or `VITE_CHATBOT_VIEW_PANEL_IFRAME_URL`
 
 ### 3. Widget View SPA (`vite.view.config.ts`)
+
 - Entry: `index.html` (full Vue app)
 - Output: `dist/view/app-[hash].js` + `app-[hash].css`
 - Hash-based routing for static hosting compatibility
@@ -64,6 +70,7 @@ This project uses **three separate Vite configurations** to support different de
 **Two Deployment Modes:**
 
 1. **Activator + Component Panel** (single-origin, no iframe):
+
    ```
    ChatbotWrapper (manages state, teleports to body)
      ├─ ChatbotButtonActivator (floating button)
@@ -82,6 +89,7 @@ This project uses **three separate Vite configurations** to support different de
 ### State Management (Pinia)
 
 **Store: `useChatbotStore`** (`src/stores/chatbot.ts`)
+
 - `isOpen`: Panel visibility state
 - `isLoading`: Message send state
 - `messages`: Chat transcript (array of `ChatbotMessage`)
@@ -91,6 +99,7 @@ This project uses **three separate Vite configurations** to support different de
 - Persistence: Messages auto-persist to `localStorage` under `vouch-chatbot-dev-history` key
 
 **Store: `useUsersStore`** (`src/stores/users.ts`)
+
 - `customerId`: Customer ID from registration (persisted to localStorage)
 - `isRegistered`: Boolean flag for registration status
 - Actions: `setCustomerId(id)`, `clearCustomerId()`, `hydrate()`
@@ -118,12 +127,14 @@ src/services/
 #### API Services Pattern (`services/apis/chat-microservice/`)
 
 **Architecture Principles:**
+
 1. **Modular**: Each API domain has its own module file (e.g., `messaging-module.ts`)
 2. **Typed**: All requests/responses have TypeScript interfaces in `types.ts`
 3. **Centralized**: Single Axios instance in `index.ts` with shared configuration
 4. **Constants**: Each module uses `API_PATHS` constants for endpoint URLs
 
 **Chat Microservice API Client** (`services/apis/chat-microservice/index.ts`):
+
 - Axios instance configured with base URL from `CHAT_MICROSERVICE_HOST`
 - Request interceptor for authentication (JWT token injection - TODO)
 - Response interceptor for error handling and logging
@@ -146,6 +157,7 @@ src/services/
    - `getStyles()`: GET widget styling configuration (header, fonts, launcher, conversation, input, etc.)
 
 **Adding a New API Module:**
+
 1. Create `services/apis/chat-microservice/[module-name]-module.ts`
 2. Define `API_PATHS` constant at the top
 3. Add TypeScript types to `services/apis/chat-microservice/types.ts`
@@ -154,6 +166,7 @@ src/services/
 6. Handle errors with `handleApiError()`
 
 **Example Module Structure:**
+
 ```typescript
 const API_PATHS = {
   BASE: '/api/v1/widget/example',
@@ -162,8 +175,7 @@ const API_PATHS = {
 export const exampleModule = {
   getData: async (): Promise<IExampleResponse> => {
     try {
-      const response: AxiosResponse<IExampleResponse> =
-        await chatMicroserviceApi.get(API_PATHS.BASE)
+      const response: AxiosResponse<IExampleResponse> = await chatMicroserviceApi.get(API_PATHS.BASE)
       return response.data
     } catch (error) {
       const apiError = handleApiError(error)
@@ -180,6 +192,7 @@ export const exampleModule = {
 **Naming Convention**: `[feature]-handler.ts` (e.g., `register-handler.ts`)
 
 **Handler Responsibilities:**
+
 1. Orchestrate multiple API calls
 2. Transform/prepare data for APIs
 3. Update Pinia stores with results
@@ -188,6 +201,7 @@ export const exampleModule = {
 6. Return simplified success/failure states
 
 **Example: User Register Handler** (`register-handler.ts`):
+
 ```typescript
 export async function doUserRegister(): Promise<boolean> {
   try {
@@ -217,6 +231,7 @@ export async function doUserRegister(): Promise<boolean> {
 ```
 
 **When to Create a Handler:**
+
 - Complex multi-step workflows
 - Logic that spans multiple API calls
 - Operations that update multiple stores
@@ -225,14 +240,17 @@ export async function doUserRegister(): Promise<boolean> {
 #### Utility Functions (`src/utils/`)
 
 **String Utils** (`utils/util-string.ts`):
+
 - `generateRandomString(length)`: Generate random alphanumeric string
 - `generateCustomerCode()`: Generate 16-character customer code
 
 **Timezone Utils** (`utils/util-timezone.ts`):
+
 - `getUserTimezoneOffset()`: Get user's timezone offset in hours (e.g., 7 for UTC+7)
 - `getUserTimezoneName()`: Get timezone name (e.g., "Asia/Bangkok")
 
 **Adding New Utils:**
+
 1. Create `utils/util-[category].ts` for related functions
 2. Export pure functions with explicit return types
 3. Add JSDoc comments for documentation
@@ -241,6 +259,7 @@ export async function doUserRegister(): Promise<boolean> {
 ### Composables
 
 **`useChatbotWidget`** (`src/composables/useChatbotWidget.ts`)
+
 - Manages focus restoration when panel opens/closes
 - Global keyboard shortcut: `Ctrl+Shift+L` to toggle widget
 - Returns: `{ store, setActivator, restoreFocus }`
@@ -250,6 +269,7 @@ export async function doUserRegister(): Promise<boolean> {
 ### Environment Configuration
 
 **`src/config/constants.ts`** - Centralized environment handling:
+
 - `IS_DEV`: Development mode flag
 - `CHAT_MICROSERVICE_HOST`: Chat Microservice API base URL (default: `http://localhost:3501`)
 - Environment variables:
@@ -259,6 +279,7 @@ export async function doUserRegister(): Promise<boolean> {
 ### Routing
 
 **Hash vs. History Mode** (`src/router/index.ts`):
+
 - Automatically uses hash history (`createWebHashHistory`) when:
   - `MODE === 'widget-view'` (widget view build)
   - OR pathname ends with `index.html` (static hosting)
@@ -271,6 +292,7 @@ export async function doUserRegister(): Promise<boolean> {
 ### Mock Service
 
 **`src/services/chatbot/mockService.ts`**:
+
 - `createUserMessage(text)`: Factory for user messages
 - `sendMockAssistantReply(text)`: Simulated assistant reply with 600-1200ms delay
 - `loadPersistedMessages()`: Load from localStorage
@@ -283,6 +305,7 @@ export async function doUserRegister(): Promise<boolean> {
 Strict TypeScript + Vue linting with security and import sorting:
 
 **Key Rules:**
+
 - All TypeScript `any` forbidden (`@typescript-eslint/no-explicit-any: error`)
 - Explicit return types required on functions
 - Interfaces must start with `I` prefix (e.g., `IChatbotWidgetHook`)
@@ -293,6 +316,7 @@ Strict TypeScript + Vue linting with security and import sorting:
 - Vue prop types and defaults required
 
 **Running Linter:**
+
 ```bash
 pnpm lint              # Check for issues
 pnpm lint --fix        # Auto-fix issues
@@ -314,18 +338,21 @@ This widget integrates with the AVA chatbot backend services:
 ## Embedding the Widget
 
 ### Method 1: IIFE Bundle (Recommended for external websites)
+
 ```html
 <script src="https://your-cdn.com/dist/activator/app.js"></script>
-<link rel="stylesheet" href="https://your-cdn.com/dist/activator/app.css">
+<link rel="stylesheet" href="https://your-cdn.com/dist/activator/app.css" />
 <div id="app" data-src="https://your-cdn.com/dist/view/index.html"></div>
 ```
 
 ### Method 2: Component Mode (Same-origin deployments)
+
 Set `VITE_CHATBOT_VIEW_PANEL=component` to render panel directly without iframe.
 
 ## Development Workflow
 
 ### Adding New Features
+
 1. Components go in `src/components/chatbot/` (PascalCase naming)
 2. Views go in `src/views/` (route-level components)
 3. Use `<script setup lang="ts">` with explicit return types
@@ -334,6 +361,7 @@ Set `VITE_CHATBOT_VIEW_PANEL=component` to render panel directly without iframe.
 6. Run `pnpm lint --fix` before committing
 
 ### Testing Widget Builds
+
 ```bash
 pnpm build:widgets          # Build both bundles
 cd dist/activator
@@ -342,6 +370,7 @@ python3 -m http.server 8000 # Serve activator bundle
 ```
 
 ### Replacing Mock Service with Real API
+
 1. Create `src/services/chatbot/apiService.ts` with same interface as mockService
 2. Update `useChatbotStore` to import from apiService
 3. Add API base URL to environment configuration
@@ -382,15 +411,18 @@ python3 -m http.server 8000 # Serve activator bundle
 ## Troubleshooting
 
 **Widget not appearing:**
+
 - Check browser console for errors
 - Verify `data-src` attribute or `VITE_CHATBOT_VIEW_PANEL_IFRAME_URL` is set
 - Check iframe URL returns valid HTML
 
 **TypeScript errors:**
+
 - Run `vue-tsc -b` to type-check entire project
 - Check `tsconfig.app.json` and `tsconfig.node.json` are valid
 
 **Build errors:**
+
 - Clear dist: `pnpm clean`
 - Check for ESLint errors: `pnpm lint`
 - Verify all imports have explicit file extensions in import statements

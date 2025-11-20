@@ -23,7 +23,6 @@
       allow="geolocation *;camera *;microphone *;"
     />
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -108,14 +107,13 @@ watch(
       }, 200)
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 onMounted((): void => {
   const el = panelEl.value
   if (!el) return
-  const canObserveResize =
-    typeof window !== 'undefined' && 'ResizeObserver' in window
+  const canObserveResize = typeof window !== 'undefined' && 'ResizeObserver' in window
   if (canObserveResize) {
     resizeObserver = new ResizeObserver((entries) => {
       const [entry] = entries

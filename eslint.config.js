@@ -19,20 +19,12 @@ const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all
+  allConfig: js.configs.all,
 })
 
 export default [
   {
-    ignores: [
-      'dist',
-      'node_modules',
-      'eslint.config.js',
-      '**/*.config.js',
-      '**/*.config.cjs',
-      '**/*.config.mjs',
-      'test/**/*.ts'
-    ]
+    ignores: ['dist', 'node_modules', 'eslint.config.js', '**/*.config.js', '**/*.config.cjs', '**/*.config.mjs', 'test/**/*.ts'],
   },
   ...compat.extends(
     'plugin:vue/essential',
@@ -44,7 +36,7 @@ export default [
     'plugin:import/typescript'
   ),
   ...createVueTsConfig({
-    extends: ['recommended']
+    extends: ['recommended'],
   }),
   {
     files: ['**/*.{js,ts,vue}'],
@@ -56,12 +48,12 @@ export default [
         sourceType: 'module',
         projectService: true,
         extraFileExtensions: ['.vue'],
-        createDefaultProgram: false
+        createDefaultProgram: false,
       },
       globals: {
         ...globals.browser,
-        ...globals.node
-      }
+        ...globals.node,
+      },
     },
     plugins: {
       '@stylistic': stylistic,
@@ -69,60 +61,39 @@ export default [
       import: importPlugin,
       security: securityPlugin,
       'simple-import-sort': simpleImportSort,
-      vue: vuePlugin
+      vue: vuePlugin,
     },
     rules: {
       'vue/no-static-inline-styles': ['error', { allowBinding: true }],
       'vue/require-prop-types': 'error',
       'vue/require-default-prop': 'error',
-      'no-mixed-spaces-and-tabs': ['error', 'smart-tabs'],
-      'no-multi-spaces': 'error',
       'no-undef': 'off',
-      quotes: ['error', 'single', { avoidEscape: true }],
-      semi: ['error', 'never'],
+      // Removed quotes, semi, spacing rules - Prettier handles these
       eqeqeq: ['error', 'always'],
       'prefer-const': 'error',
       'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
       'no-debugger': 'error',
       '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
-      ],
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/restrict-template-expressions': [
-        'error',
-        { allowBoolean: false, allowNumber: true }
-      ],
+      '@typescript-eslint/restrict-template-expressions': ['error', { allowBoolean: false, allowNumber: true }],
       '@typescript-eslint/consistent-type-assertions': 'error',
       '@typescript-eslint/prefer-readonly': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'off',
-      '@typescript-eslint/explicit-function-return-type': [
-        'error',
-        { allowExpressions: true, allowTypedFunctionExpressions: true }
-      ],
+      '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true, allowTypedFunctionExpressions: true }],
       'security/detect-non-literal-regexp': 'error',
       'import/no-unresolved': ['error', { ignore: ['^~icons/'] }],
       'simple-import-sort/imports': [
         'error',
         {
-          groups: [
-            ['^vue', '^@?\\w'],
-            ['^\\u0000'],
-            ['^node:'],
-            ['^'],
-            ['^\\.']
-          ]
-        }
+          groups: [['^vue', '^@?\\w'], ['^\\u0000'], ['^node:'], ['^'], ['^\\.']],
+        },
       ],
       'simple-import-sort/exports': 'error',
-      '@stylistic/object-curly-spacing': ['error', 'always'],
-      '@stylistic/comma-dangle': ['error', 'always-multiline'],
-      '@stylistic/array-bracket-spacing': ['error', 'never'],
-      '@stylistic/no-trailing-spaces': 'error',
-      '@stylistic/arrow-parens': ['error', 'always'],
+      // Note: All stylistic/formatting rules removed to avoid conflicts with Prettier
+      // Prettier handles: quotes, semi, spacing, trailing commas, line length, etc.
       'no-shadow': 'off',
       '@typescript-eslint/no-shadow': ['error'],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
@@ -133,20 +104,20 @@ export default [
           format: ['PascalCase'],
           custom: {
             regex: '^I[A-Z]',
-            match: true
-          }
-        }
+            match: true,
+          },
+        },
       ],
-      'max-len': ['error', { code: 140, ignoreComments: true }],
+      // Removed max-len - Prettier handles line length with printWidth
       'no-underscore-dangle': ['error', { allow: ['_id'] }],
       'prefer-destructuring': [
         'error',
         {
           VariableDeclarator: { array: false, object: true },
-          AssignmentExpression: { array: true, object: false }
+          AssignmentExpression: { array: true, object: false },
         },
-        { enforceForRenamedProperties: false }
-      ]
+        { enforceForRenamedProperties: false },
+      ],
     },
     settings: {
       'import/resolver': {
@@ -156,29 +127,23 @@ export default [
         alias: {
           map: [
             ['@', './src'],
-            ['@modules', './src/modules']
+            ['@modules', './src/modules'],
           ],
-          extensions: ['.ts', '.js', '.vue', '.json']
-        }
-      }
-    }
+          extensions: ['.ts', '.js', '.vue', '.json'],
+        },
+      },
+    },
   },
   {
     files: ['**/*.vue'],
     rules: {
-      'vue/max-attributes-per-line': [
-        'error',
-        {
-          singleline: 3,
-          multiline: 1
-        }
-      ]
-    }
+      // Removed vue/max-attributes-per-line - Prettier handles attribute formatting
+    },
   },
   {
     files: ['**/__tests__/**/*.ts', '**/__tests__/**/*.spec.ts', '**/*.spec.ts', '**/*.test.ts'],
     rules: {
-      'security/detect-object-injection': 'off'
-    }
-  }
+      'security/detect-object-injection': 'off',
+    },
+  },
 ]

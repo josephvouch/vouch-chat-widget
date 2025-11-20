@@ -60,7 +60,7 @@ chatMicroserviceApi.interceptors.request.use(
       console.error('[Chat Microservice API] Request error:', error)
     }
     return Promise.reject(error)
-  },
+  }
 )
 
 /**
@@ -93,7 +93,7 @@ chatMicroserviceApi.interceptors.response.use(
     }
 
     return Promise.reject(error)
-  },
+  }
 )
 
 /**

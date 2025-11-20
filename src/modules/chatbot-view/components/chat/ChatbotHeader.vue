@@ -1,38 +1,13 @@
 <template>
-  <div
-    class="
-      chatbot-header
-      vc3-flex-shrink-0
-      vc3-border-b
-      vc3-border-slate-200
-      vc3-px-4
-      vc3-py-4
-    "
-    :style="headerStyles"
-  >
+  <div class="chatbot-header vc3-flex-shrink-0 vc3-border-b vc3-border-slate-200 vc3-px-4 vc3-py-4" :style="headerStyles">
     <template v-if="showWelcome">
       <!-- Welcome layout: taller header with avatar, title, phrase and greetings text -->
       <div class="vc3-flex vc3-flex-col vc3-gap-3 vc3-w-full">
         <!-- Row 1: avatar + close button -->
         <div class="vc3-flex vc3-items-start vc3-justify-between vc3-gap-3">
-          <div
-            v-if="avatarUrl"
-            class="vc3-flex-shrink-0"
-          >
-            <div
-              class="
-                vc3-h-24
-                vc3-w-24
-                vc3-rounded-full
-                vc3-overflow-hidden
-                vc3-bg-slate-200
-              "
-            >
-              <img
-                :src="avatarUrl"
-                :alt="`${displayTitle} avatar`"
-                class="vc3-h-full vc3-w-full vc3-object-cover"
-              >
+          <div v-if="avatarUrl" class="vc3-flex-shrink-0">
+            <div class="vc3-h-24 vc3-w-24 vc3-rounded-full vc3-overflow-hidden vc3-bg-slate-200">
+              <img :src="avatarUrl" :alt="`${displayTitle} avatar`" class="vc3-h-full vc3-w-full vc3-object-cover" />
             </div>
           </div>
           <div class="vc3-flex vc3-items-start vc3-justify-center">
@@ -43,37 +18,20 @@
               @click="handleClose"
             >
               <span class="vc3-sr-only">Close chat</span>
-              <span
-                aria-hidden="true"
-                class="vc3-text-3xl vc3-leading-none"
-              >
-                ×
-              </span>
+              <span aria-hidden="true" class="vc3-text-3xl vc3-leading-none"> × </span>
             </button>
           </div>
         </div>
 
         <!-- Rows 2-4: title, welcome phrase, greetings text -->
         <div class="vc3-min-w-0 vc3-w-full">
-          <p
-            :id="titleId"
-            class="vc3-font-semibold vc3-truncate"
-            :style="titleStyles"
-          >
+          <p :id="titleId" class="vc3-font-semibold vc3-truncate" :style="titleStyles">
             {{ displayTitle }}
           </p>
-          <p
-            v-if="welcomePhrase"
-            class="vc3-mt-1 vc3-text-xs vc3-truncate"
-            :style="subtitleStyles"
-          >
+          <p v-if="welcomePhrase" class="vc3-mt-1 vc3-text-xs vc3-truncate" :style="subtitleStyles">
             {{ welcomePhrase }}
           </p>
-          <p
-            v-if="greetingsText"
-            class="vc3-mt-1 vc3-text-[11px] vc3-truncate"
-            :style="subtitleStyles"
-          >
+          <p v-if="greetingsText" class="vc3-mt-1 vc3-text-[11px] vc3-truncate" :style="subtitleStyles">
             {{ greetingsText }}
           </p>
         </div>
@@ -84,39 +42,16 @@
       <!-- Main layout: compact header with smaller avatar and text on the right -->
       <div class="vc3-flex vc3-items-center vc3-justify-between vc3-gap-3 vc3-w-full">
         <div class="vc3-flex vc3-items-center vc3-gap-3 vc3-min-w-0 vc3-w-full">
-          <div
-            v-if="avatarUrl"
-            class="vc3-flex-shrink-0"
-          >
-            <div
-              class="
-                vc3-h-10
-                vc3-w-10
-                vc3-rounded-full
-                vc3-overflow-hidden
-                vc3-bg-slate-200
-              "
-            >
-              <img
-                :src="avatarUrl"
-                :alt="`${displayTitle} avatar`"
-                class="vc3-h-full vc3-w-full vc3-object-cover"
-              >
+          <div v-if="avatarUrl" class="vc3-flex-shrink-0">
+            <div class="vc3-h-10 vc3-w-10 vc3-rounded-full vc3-overflow-hidden vc3-bg-slate-200">
+              <img :src="avatarUrl" :alt="`${displayTitle} avatar`" class="vc3-h-full vc3-w-full vc3-object-cover" />
             </div>
           </div>
           <div class="vc3-min-w-0 vc3-w-full">
-            <p
-              :id="titleId"
-              class="vc3-font-semibold vc3-truncate"
-              :style="titleStyles"
-            >
+            <p :id="titleId" class="vc3-font-semibold vc3-truncate" :style="titleStyles">
               {{ displayTitle }}
             </p>
-            <p
-              v-if="welcomePhrase"
-              class="vc3-mt-0.5 vc3-text-xs vc3-truncate"
-              :style="subtitleStyles"
-            >
+            <p v-if="welcomePhrase" class="vc3-mt-0.5 vc3-text-xs vc3-truncate" :style="subtitleStyles">
               {{ welcomePhrase }}
             </p>
           </div>
@@ -131,12 +66,7 @@
             @click="handleClose"
           >
             <span class="vc3-sr-only">Close chat</span>
-            <span
-              aria-hidden="true"
-              class="vc3-text-3xl vc3-leading-none"
-            >
-              ×
-            </span>
+            <span aria-hidden="true" class="vc3-text-3xl vc3-leading-none"> × </span>
           </button>
         </div>
       </div>
@@ -172,9 +102,7 @@ const displayTitle = computed<string>(() => activeStyles.value.title)
 const avatarUrl = computed<string>(() => conversationStyles.value.avatarUrl ?? '')
 const welcomePhrase = computed<string>(() => welcomeScreenStyles.value.welcomePhrase ?? '')
 const greetings = computed<string[]>(() => welcomeScreenStyles.value.greetings ?? [])
-const greetingsText = computed<string>(() =>
-  greetings.value && greetings.value.length > 0 ? greetings.value.join(' ') : '',
-)
+const greetingsText = computed<string>(() => (greetings.value && greetings.value.length > 0 ? greetings.value.join(' ') : ''))
 
 const headerStyles = computed<Record<string, string>>(() => ({
   backgroundColor: activeStyles.value.bgColor,

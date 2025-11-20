@@ -22,11 +22,7 @@ onBeforeUnmount((): void => {
 const handleClose = (): void => {
   void store.close()
   // If embedded in an iframe, request the host to close the panel instead of navigating.
-  if (
-    typeof window !== 'undefined' &&
-    window.parent &&
-    window.parent !== window
-  ) {
+  if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
     window.parent.postMessage({ type: 'vc:close' }, '*')
     return
   }
@@ -47,14 +43,7 @@ const handleReady = (): void => {
 
 <template>
   <section class="bot-view">
-    <ChatbotView
-      :open="isOpen"
-      :messages="messages"
-      :loading="isLoading"
-      @close="handleClose"
-      @send="handleSend"
-      @ready="handleReady"
-    />
+    <ChatbotView :open="isOpen" :messages="messages" :loading="isLoading" @close="handleClose" @send="handleSend" @ready="handleReady" />
   </section>
 </template>
 

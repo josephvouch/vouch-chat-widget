@@ -28,4 +28,3 @@ export function getWidgetPersistKey(suffix: string): string {
   }
   return `${globalWidgetApiKey}${normalizedSuffix}`
 }
-

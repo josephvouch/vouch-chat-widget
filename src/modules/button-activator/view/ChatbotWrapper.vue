@@ -25,15 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  ref,
-  toRefs,
-  watch,
-} from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
 import ChatbotButtonActivator from '@modules/button-activator/components/ChatbotButtonActivator.vue'
 import { useChatbotWidget } from '@modules/button-activator/composeables/useChatbotWidget'
 import ChatbotPanel from '@modules/chatbot-view/components/ChatbotPanel.vue'
@@ -81,11 +73,9 @@ interface IWidgetWindow extends Window {
   vcOnMessage?: (event: MessageEvent<unknown>) => void
 }
 
-const getWidgetWindow = (): IWidgetWindow | null =>
-  typeof window === 'undefined' ? null : (window as IWidgetWindow)
+const getWidgetWindow = (): IWidgetWindow | null => (typeof window === 'undefined' ? null : (window as IWidgetWindow))
 
-const isWidgetMessage = (value: unknown): value is IWidgetMessage =>
-  typeof value === 'object' && value !== null && 'type' in value
+const isWidgetMessage = (value: unknown): value is IWidgetMessage => typeof value === 'object' && value !== null && 'type' in value
 
 const mounted = ref(false)
 const activatorComponent = ref<IActivatorExpose | null>(null)
@@ -137,7 +127,7 @@ watch(
   (element: HTMLElement | null) => {
     setActivator(element)
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 defineExpose({

@@ -17,10 +17,7 @@ const API_PATHS = {
 export const tokenModule = {
   refreshToken: async (payload: IRefreshTokenRequest): Promise<IRefreshTokenResponse> => {
     try {
-      const response: AxiosResponse<IRefreshTokenResponse> = await chatMicroserviceApi.post(
-        API_PATHS.REFRESH,
-        payload,
-      )
+      const response: AxiosResponse<IRefreshTokenResponse> = await chatMicroserviceApi.post(API_PATHS.REFRESH, payload)
       return response.data
     } catch (error) {
       throw handleApiError(error)

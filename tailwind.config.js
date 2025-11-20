@@ -3,7 +3,7 @@ export default {
   prefix: 'vc3-',
   content: ['./index.html', './src/**/*.{vue,ts,tsx,js,jsx}'],
   theme: {
-    extend: {}
+    extend: {},
   },
-  plugins: []
+  plugins: [],
 }

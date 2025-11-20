@@ -37,12 +37,7 @@ const originalValidateLink = md.validateLink
 md.validateLink = (url) => {
   if (!originalValidateLink(url)) return false
   const lower = url.trim().toLowerCase()
-  return (
-    lower.startsWith('http://') ||
-    lower.startsWith('https://') ||
-    lower.startsWith('mailto:') ||
-    lower.startsWith('tel:')
-  )
+  return lower.startsWith('http://') || lower.startsWith('https://') || lower.startsWith('mailto:') || lower.startsWith('tel:')
 }
 
 export function renderMarkdown(input: string): string {

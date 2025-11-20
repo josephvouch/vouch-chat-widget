@@ -8,12 +8,7 @@ import type { AxiosResponse } from 'axios'
 import { CHAT_MICROSERVICE_HOST } from '../../../config/constants'
 import { useUsersStore } from '../../../stores/users'
 import chatMicroserviceApi, { handleApiError } from './index'
-import type {
-  IApiError,
-  IRetrieveLastMessagesParams,
-  IRetrieveLastMessagesResponse,
-  ISendMessageRequest,
-} from './types'
+import type { IApiError, IRetrieveLastMessagesParams, IRetrieveLastMessagesResponse, ISendMessageRequest } from './types'
 import { handle401Wrapper } from './wrappers/handle-401-wrapper'
 
 /**
@@ -32,9 +27,7 @@ export const messagingModule = {
    * @param params - Query parameters (limit)
    * @returns Promise with array of messages
    */
-  retrieveLastMessages: async (
-    params?: IRetrieveLastMessagesParams,
-  ): Promise<IRetrieveLastMessagesResponse> => {
+  retrieveLastMessages: async (params?: IRetrieveLastMessagesParams): Promise<IRetrieveLastMessagesResponse> => {
     try {
       return await handle401Wrapper(async () => {
         const queryParams: Record<string, string | number> = {
@@ -45,10 +38,9 @@ export const messagingModule = {
           queryParams.latestChatMessageId = params.latestChatMessageId
         }
 
-        const response: AxiosResponse<IRetrieveLastMessagesResponse> =
-          await chatMicroserviceApi.get(`${API_PATHS.BASE}/latest`, {
-            params: queryParams,
-          })
+        const response: AxiosResponse<IRetrieveLastMessagesResponse> = await chatMicroserviceApi.get(`${API_PATHS.BASE}/latest`, {
+          params: queryParams,
+        })
         return response.data
       })
     } catch (error) {
@@ -63,10 +55,7 @@ export const messagingModule = {
    * @param signal - Optional abort signal to cancel the stream
    * @returns Promise with the raw fetch response (contains readable stream)
    */
-  sendMessage: async (
-    data: ISendMessageRequest,
-    signal?: AbortSignal,
-  ): Promise<Response> => {
+  sendMessage: async (data: ISendMessageRequest, signal?: AbortSignal): Promise<Response> => {
     try {
       return await handle401Wrapper(async () => {
         const usersStore = useUsersStore()
@@ -115,10 +104,7 @@ export const messagingModule = {
                 ? String((errorPayload as Record<string, unknown>).code)
                 : 'STREAM_ERROR',
             message,
-            details:
-              typeof errorPayload === 'object' && errorPayload !== null
-                ? (errorPayload as Record<string, unknown>)
-                : undefined,
+            details: typeof errorPayload === 'object' && errorPayload !== null ? (errorPayload as Record<string, unknown>) : undefined,
           }
 
           throw apiError

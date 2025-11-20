@@ -1,10 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 
-import {
-  createMessage,
-  createTypingIndicatorMessage,
-} from '@/utils/message-factory'
+import { createMessage, createTypingIndicatorMessage } from '@/utils/message-factory'
 
 import type { IMessage } from '../services/apis/chat-microservice/types'
 import {
@@ -18,10 +15,8 @@ import {
 } from '../services/handlers/message-stream-handler'
 
 export const useChatbotStore = defineStore('chatbot', () => {
-  const isMessage = (message: IMessage | null): message is IMessage =>
-    message !== null
-  const getMessageId = (message: IMessage | null): string | null =>
-    message?._id ?? null
+  const isMessage = (message: IMessage | null): message is IMessage => message !== null
+  const getMessageId = (message: IMessage | null): string | null => message?._id ?? null
 
   const isOpen = ref(false)
   const isLoading = ref(false)
@@ -78,9 +73,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
   }
 
   const patchMessage = (id: string, patch: Partial<IMessage>): void => {
-    messages.value = messages.value.map((message) =>
-      message._id === id ? { ...message, ...patch } : message,
-    )
+    messages.value = messages.value.map((message) => (message._id === id ? { ...message, ...patch } : message))
   }
 
   const appendToMessageText = (id: string, chunk: string): void => {
@@ -89,11 +82,10 @@ export const useChatbotStore = defineStore('chatbot', () => {
       message._id === id
         ? {
             ...message,
-            msgType:
-              message.msgType === 'typing-indicator' ? 'text' : message.msgType,
+            msgType: message.msgType === 'typing-indicator' ? 'text' : message.msgType,
             text: `${message.text ?? ''}${chunk}`,
           }
-        : message,
+        : message
     )
   }
 
@@ -132,12 +124,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
           onEvent: (event: IMessageStreamEvent) => {
             switch (event.event) {
               case STREAMING_EVENT_AI_ANSWER: {
-                const chunk =
-                  typeof event.data === 'string'
-                    ? event.data
-                    : typeof event.data === 'number'
-                      ? String(event.data)
-                      : ''
+                const chunk = typeof event.data === 'string' ? event.data : typeof event.data === 'number' ? String(event.data) : ''
                 if (!assistantMessage) {
                   assistantMessage = createTypingIndicatorMessage({
                     fromMe: false,
@@ -149,14 +136,8 @@ export const useChatbotStore = defineStore('chatbot', () => {
                 break
               }
               case STREAMING_EVENT_CHAIN_RESULT: {
-                if (
-                  event.data &&
-                  typeof event.data === 'object' &&
-                  'ai_message' in (event.data as Record<string, unknown>)
-                ) {
-                  const aiMessage = (
-                    event.data as Record<string, unknown>
-                  ).ai_message
+                if (event.data && typeof event.data === 'object' && 'ai_message' in (event.data as Record<string, unknown>)) {
+                  const aiMessage = (event.data as Record<string, unknown>).ai_message
                   if (typeof aiMessage === 'string') {
                     if (!assistantMessage) {
                       assistantMessage = createTypingIndicatorMessage({
@@ -178,9 +159,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
                   !!event.data &&
                   typeof event.data === 'object' &&
                   'active' in (event.data as Record<string, unknown>) &&
-                  Boolean(
-                    (event.data as Record<string, unknown>).active as boolean,
-                  )
+                  Boolean((event.data as Record<string, unknown>).active as boolean)
 
                 if (active) {
                   if (!assistantMessage) {
@@ -191,13 +170,9 @@ export const useChatbotStore = defineStore('chatbot', () => {
                     appendMessage(assistantMessage)
                   }
                 } else if (assistantMessage) {
-                  const target = messages.value.find(
-                    (message) => message._id === assistantMessage?._id,
-                  )
+                  const target = messages.value.find((message) => message._id === assistantMessage?._id)
                   if (target && target.msgType === 'typing-indicator') {
-                    messages.value = messages.value.filter(
-                      (message) => message._id !== assistantMessage?._id,
-                    )
+                    messages.value = messages.value.filter((message) => message._id !== assistantMessage?._id)
                     assistantMessage = null
                   }
                 }
@@ -208,9 +183,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
                 if (isMessage(assistantMessage)) {
                   const assistantId = getMessageId(assistantMessage)
                   if (assistantId) {
-                    messages.value = messages.value.filter(
-                      (message) => message._id !== assistantId,
-                    )
+                    messages.value = messages.value.filter((message) => message._id !== assistantId)
                     assistantMessage = null
                   }
                 }
@@ -224,9 +197,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
           onError: (error: unknown) => {
             console.error('[chatbot] streaming error', error)
             const message =
-              error instanceof Error && error.message
-                ? error.message
-                : 'Sorry, we ran into a problem while generating a reply.'
+              error instanceof Error && error.message ? error.message : 'Sorry, we ran into a problem while generating a reply.'
             if (isMessage(assistantMessage)) {
               const assistantId = getMessageId(assistantMessage)
               if (assistantId) {
@@ -245,13 +216,10 @@ export const useChatbotStore = defineStore('chatbot', () => {
               if (isMessage(assistantMessage)) {
                 const assistantId = getMessageId(assistantMessage)
                 if (assistantId) {
-                  const assistant = messages.value.find(
-                    (message) => message._id === assistantId,
-                  )
+                  const assistant = messages.value.find((message) => message._id === assistantId)
                   if (assistant && !assistant.text.trim()) {
                     patchMessage(assistantId, {
-                      text:
-                        'Thanks for your message! I will get back shortly.',
+                      text: 'Thanks for your message! I will get back shortly.',
                       msgType: 'text',
                     })
                   }
@@ -261,7 +229,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
             streamResolve?.()
             streamResolve = null
           },
-        },
+        }
       )
 
       activeStream.value = {
@@ -280,10 +248,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
         const assistantId = getMessageId(assistant)
         if (assistantId) {
           patchMessage(assistantId, {
-            text:
-              error instanceof Error && error.message
-                ? error.message
-                : 'Unable to send your message. Please try again.',
+            text: error instanceof Error && error.message ? error.message : 'Unable to send your message. Please try again.',
             msgType: 'system',
           })
         }
@@ -301,7 +266,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
       if (openState) {
         unreadCount.value = 0
       }
-    },
+    }
   )
 
   return {

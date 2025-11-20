@@ -5,36 +5,17 @@
     :style="bodyStyles"
     @scroll.passive="handleScroll"
   >
-    <ul
-      v-if="messageList.length > 0"
-      class="vc3-space-y-3"
-    >
-      <li
-        v-for="message in messageList"
-        :key="message._id"
-      >
+    <ul v-if="messageList.length > 0" class="vc3-space-y-3">
+      <li v-for="message in messageList" :key="message._id">
         <MessageBubble :message="message" />
       </li>
     </ul>
-    <p
-      v-else
-      class="vc3-text-center vc3-text-sm vc3-text-slate-500 vc3-mt-6"
-    >
-      Ask your first question to start the conversation.
-    </p>
+    <p v-else class="vc3-text-center vc3-text-sm vc3-text-slate-500 vc3-mt-6">Ask your first question to start the conversation.</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-  withDefaults,
-} from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, withDefaults } from 'vue'
 
 import type { IMessage } from '@/services/apis/chat-microservice/types'
 import { useWidgetStylesStore } from '@/stores/widget-styles'
@@ -80,8 +61,7 @@ const scrollToBottom = (): void => {
 
 const setupVisibilityObserver = (): void => {
   const el = chatBodyRef.value
-  const canObserve =
-    typeof window !== 'undefined' && 'ResizeObserver' in window && el
+  const canObserve = typeof window !== 'undefined' && 'ResizeObserver' in window && el
   if (!canObserve || !el) return
 
   resizeObserver = new ResizeObserver((entries) => {
@@ -131,7 +111,7 @@ watch(
     if (!shouldStickToBottom.value) return
     void nextTick(scrollToBottom)
   },
-  { deep: false },
+  { deep: false }
 )
 
 onBeforeUnmount(() => {

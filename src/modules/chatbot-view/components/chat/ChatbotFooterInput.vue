@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="chatbot-footer"
-    :style="footerBackgroundStyles"
-  >
-    <form
-      class="vc3-relative vc3-mb-2"
-      @submit.prevent="handleSubmit"
-    >
+  <div class="chatbot-footer" :style="footerBackgroundStyles">
+    <form class="vc3-relative vc3-mb-2" @submit.prevent="handleSubmit">
       <label class="vc3-block">
         <span class="vc3-sr-only">Your message</span>
         <input
@@ -14,18 +8,7 @@
           v-model="draft"
           type="text"
           :style="inputFieldStyles"
-          class="
-            vc3-w-full
-            vc3-rounded-full
-            vc3-border
-            vc3-border-slate-200
-            vc3-pl-4
-            vc3-pr-20
-            vc3-py-3
-            vc3-text-sm
-            vc3-shadow-sm
-            focus:vc3-outline-none
-          "
+          class="vc3-w-full vc3-rounded-full vc3-border vc3-border-slate-200 vc3-pl-4 vc3-pr-20 vc3-py-3 vc3-text-sm vc3-shadow-sm focus:vc3-outline-none"
           placeholder="Type your message."
           @keydown.enter.exact.prevent="handleSubmit"
         />
@@ -37,26 +20,11 @@
         <button
           type="button"
           :style="attachmentButtonStyles"
-          class="
-            vc3-inline-flex
-            vc3-items-center
-            vc3-justify-center
-            vc3-rounded-full
-            vc3-p-2
-            vc3-transition
-            hover:vc3-opacity-80
-            focus-visible:vc3-outline
-            focus-visible:vc3-outline-2
-            focus-visible:vc3-outline-offset-2
-            focus-visible:vc3-outline-slate-400
-          "
+          class="vc3-inline-flex vc3-items-center vc3-justify-center vc3-rounded-full vc3-p-2 vc3-transition hover:vc3-opacity-80 focus-visible:vc3-outline focus-visible:vc3-outline-2 focus-visible:vc3-outline-offset-2 focus-visible:vc3-outline-slate-400"
           @click="handleAttachment"
         >
           <span class="vc3-sr-only">Attach file</span>
-          <IconAttachment
-            aria-hidden="true"
-            class="vc3-h-5 vc3-w-5"
-          />
+          <IconAttachment aria-hidden="true" class="vc3-h-5 vc3-w-5" />
         </button>
 
         <!-- Send button -->
@@ -64,39 +32,16 @@
           type="submit"
           :disabled="composerDisabled"
           :style="sendButtonStyles"
-          class="
-            vc3-inline-flex
-            vc3-items-center
-            vc3-justify-center
-            vc3-rounded-full
-            vc3-p-2
-            vc3-cursor-pointer
-            vc3-transition
-            hover:vc3-opacity-90
-            focus-visible:vc3-outline
-            focus-visible:vc3-outline-2
-            focus-visible:vc3-outline-offset-2
-            disabled:vc3-cursor-not-allowed
-            disabled:vc3-bg-slate-300
-            disabled:vc3-text-slate-500
-          "
+          class="vc3-inline-flex vc3-items-center vc3-justify-center vc3-rounded-full vc3-p-2 vc3-cursor-pointer vc3-transition hover:vc3-opacity-90 focus-visible:vc3-outline focus-visible:vc3-outline-2 focus-visible:vc3-outline-offset-2 disabled:vc3-cursor-not-allowed disabled:vc3-bg-slate-300 disabled:vc3-text-slate-500"
         >
           <span class="vc3-sr-only">Send message</span>
-          <IconSend
-            aria-hidden="true"
-            class="vc3-h-5 vc3-w-5"
-          />
+          <IconSend aria-hidden="true" class="vc3-h-5 vc3-w-5" />
         </button>
       </div>
     </form>
 
     <!-- Powered by text (right aligned) -->
-    <p
-      class="vc3-text-right vc3-text-xs vc3-text-slate-400"
-      :style="footerTextStyles"
-    >
-      Powered by Vouch
-    </p>
+    <p class="vc3-text-right vc3-text-xs vc3-text-slate-400" :style="footerTextStyles">Powered by Vouch</p>
   </div>
 </template>
 
@@ -127,9 +72,7 @@ const draft = ref('')
 const isTyping = ref(false)
 let typingTimeout: ReturnType<typeof setTimeout> | null = null
 
-const composerDisabled = computed<boolean>(
-  () => props.loading || !draft.value.trim(),
-)
+const composerDisabled = computed<boolean>(() => props.loading || !draft.value.trim())
 
 const footerBackgroundStyles = computed<Record<string, string>>(() => ({
   backgroundColor: conversationStyles.value.backgroundColor,
@@ -220,14 +163,14 @@ watch(
       focusComposer()
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 watch(
   () => draft.value,
   () => {
     updateTypingState()
-  },
+  }
 )
 
 onBeforeUnmount(() => {

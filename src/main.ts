@@ -27,7 +27,7 @@ if (IS_DEV) {
 if (!apiKey) {
   console.error(
     '[Vouch Chat Widget] FATAL ERROR: Widget API key is required but not provided. ' +
-      'Please provide a valid API key via data-apikey attribute or VITE_WIDGET_API_KEY environment variable.',
+      'Please provide a valid API key via data-apikey attribute or VITE_WIDGET_API_KEY environment variable.'
   )
   // Do not mount the app
   throw new Error('Widget API key is required')
@@ -44,22 +44,20 @@ async function initializeApp(): Promise<void> {
   pinia.use(
     createPersistedState({
       key: (baseKey: string) => getWidgetPersistKey(baseKey),
-    }),
+    })
   )
 
   app.use(pinia)
 
   // Fetch widget styles from API (required before mounting)
-  const shouldFetchWidgetStyles =
-    typeof window === 'undefined' ||
-    new URL(window.location.href).searchParams.get('fromIframe') !== '1'
+  const shouldFetchWidgetStyles = typeof window === 'undefined' || new URL(window.location.href).searchParams.get('fromIframe') !== '1'
 
   if (shouldFetchWidgetStyles) {
     const stylesLoaded = await fetchAndSetWidgetStyles()
     if (!stylesLoaded) {
       console.error(
         '[Vouch Chat Widget] FATAL ERROR: Failed to load widget styles from API. ' +
-          'Please check your network connection and API configuration.',
+          'Please check your network connection and API configuration.'
       )
       throw new Error('Failed to load widget styles')
     }

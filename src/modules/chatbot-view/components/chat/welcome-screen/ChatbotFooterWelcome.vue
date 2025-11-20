@@ -1,50 +1,23 @@
 <template>
-  <div
-    class="chatbot-footer-welcome"
-    :style="footerBackgroundStyles"
-  >
+  <div class="chatbot-footer-welcome" :style="footerBackgroundStyles">
     <div class="vc3-pb-2">
       <button
         type="button"
-        class="
-          vc3-inline-flex
-          vc3-items-center
-          vc3-justify-center
-          vc3-rounded-full
-          vc3-py-3
-          vc3-text-sm
-          vc3-font-semibold
-          vc3-shadow-sm
-          vc3-w-full
-          disabled:vc3-cursor-not-allowed
-          disabled:vc3-opacity-80
-          focus-visible:vc3-outline
-          focus-visible:vc3-outline-2
-          focus-visible:vc3-outline-offset-2
-          hover:vc3-opacity-95
-        "
+        class="vc3-inline-flex vc3-items-center vc3-justify-center vc3-rounded-full vc3-py-3 vc3-text-sm vc3-font-semibold vc3-shadow-sm vc3-w-full disabled:vc3-cursor-not-allowed disabled:vc3-opacity-80 focus-visible:vc3-outline focus-visible:vc3-outline-2 focus-visible:vc3-outline-offset-2 hover:vc3-opacity-95"
         :class="{ 'vc3-cursor-not-allowed vc3-opacity-80': loading }"
         :disabled="loading"
         :style="ctaButtonStyles"
         @click="handleClick"
       >
         <span v-if="!loading">Get Ready</span>
-        <span
-          v-else
-          class="vc3-flex vc3-items-center vc3-justify-center vc3-gap-2"
-        >
+        <span v-else class="vc3-flex vc3-items-center vc3-justify-center vc3-gap-2">
           <span class="vc3-h-4 vc3-w-4 vc3-animate-spin vc3-rounded-full vc3-border-2 vc3-border-white/60 vc3-border-t-white" />
           Processing...
         </span>
       </button>
     </div>
 
-    <p
-      class="vc3-text-right vc3-text-xs vc3-text-slate-400"
-      :style="footerTextStyles"
-    >
-      Powered by Vouch
-    </p>
+    <p class="vc3-text-right vc3-text-xs vc3-text-slate-400" :style="footerTextStyles">Powered by Vouch</p>
   </div>
 </template>
 

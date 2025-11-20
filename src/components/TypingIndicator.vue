@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="typing-indicator vc3-flex vc3-items-center vc3-gap-2 vc3-text-sm"
-    role="status"
-    aria-live="polite"
-  >
+  <div class="typing-indicator vc3-flex vc3-items-center vc3-gap-2 vc3-text-sm" role="status" aria-live="polite">
     <span
       v-for="dot in typingIndicatorDots"
       :key="dot.id"

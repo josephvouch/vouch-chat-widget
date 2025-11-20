@@ -1,23 +1,10 @@
 <template>
-  <div
-    class="message-bubble-wrapper"
-    :class="wrapperClass"
-  >
-    <div
-      class="message-bubble-container"
-      :class="containerClass"
-    >
+  <div class="message-bubble-wrapper" :class="wrapperClass">
+    <div class="message-bubble-container" :class="containerClass">
       <!-- Avatar for left bubble (only if not fromMe and avatarUrl exists) -->
-       <div
-          v-if="!message.fromMe && conversationStyles.avatarUrl"
-          class="vc3-flex-shrink-0 vc3-mr-1 vc3-self-start"
-        >
-        <img
-          :src="conversationStyles.avatarUrl"
-          :alt="`${message.senderBy} avatar`"
-          class="vc3-h-8 vc3-w-8 vc3-rounded-full"
-        >
-       </div>
+      <div v-if="!message.fromMe && conversationStyles.avatarUrl" class="vc3-flex-shrink-0 vc3-mr-1 vc3-self-start">
+        <img :src="conversationStyles.avatarUrl" :alt="`${message.senderBy} avatar`" class="vc3-h-8 vc3-w-8 vc3-rounded-full" />
+      </div>
 
       <div :class="bubbleWrapperClass">
         <!-- Sender label ('You' for own messages only) -->
@@ -30,32 +17,18 @@
           You
         </p>
 
-        <div
-          class="message-bubble"
-          :style="bubbleStyles"
-        >
+        <div class="message-bubble" :style="bubbleStyles">
           <template v-if="message.fromMe">
-            <p
-              class="vc3-whitespace-pre-wrap vc3-break-words"
-              :style="textStyles"
-            >
+            <p class="vc3-whitespace-pre-wrap vc3-break-words" :style="textStyles">
               {{ message.text }}
             </p>
           </template>
           <TypingIndicator v-else-if="isTypingIndicator" />
-          <MarkdownText
-            v-else
-            :content="message.text"
-            :style="textStyles"
-          />
+          <MarkdownText v-else :content="message.text" :style="textStyles" />
         </div>
 
         <!-- Date outside the bubble -->
-        <p
-          class="vc3-mt-1 vc3-text-xs vc3-text-slate-600 vc3-mt-2 vc3-opacity-70"
-          :class="dateAlignmentClass"
-          :style="dateStyles"
-        >
+        <p class="vc3-mt-1 vc3-text-xs vc3-text-slate-600 vc3-mt-2 vc3-opacity-70" :class="dateAlignmentClass" :style="dateStyles">
           {{ formattedDate }}
         </p>
       </div>
@@ -80,9 +53,7 @@ const props = defineProps<IProps>()
 const widgetStylesStore = useWidgetStylesStore()
 const conversationStyles = computed(() => widgetStylesStore.getConversationStyles)
 const fontsStyles = computed(() => widgetStylesStore.getFontsStyles)
-const isTypingIndicator = computed(
-  () => props.message.msgType === 'typing-indicator',
-)
+const isTypingIndicator = computed(() => props.message.msgType === 'typing-indicator')
 
 // Wrapper class for overall alignment
 const wrapperClass = computed<string>(() => {
@@ -118,9 +89,7 @@ const dateAlignmentClass = computed<string>(() => {
 // Bubble styles based on message direction
 const bubbleStyles = computed<Record<string, string>>(() => {
   const isFromMe = props.message.fromMe
-  const bubble = isFromMe
-    ? conversationStyles.value.rightBubble
-    : conversationStyles.value.leftBubble
+  const bubble = isFromMe ? conversationStyles.value.rightBubble : conversationStyles.value.leftBubble
 
   return {
     backgroundColor: bubble.bgColor,

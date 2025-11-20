@@ -17,18 +17,12 @@ vi.mock('../../apis/chat-microservice/messaging-module', () => ({
 }))
 
 describe('message-handler', () => {
-
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
   })
 
-  const createMockMessage = (
-    id: string,
-    text: string,
-    senderBy: string,
-    createdAt?: string,
-  ): IMessage => ({
+  const createMockMessage = (id: string, text: string, senderBy: string, createdAt?: string): IMessage => ({
     _id: id,
     text,
     msgType: 'text',
@@ -127,10 +121,7 @@ describe('message-handler', () => {
 
     it('sets latest chat message ID', async () => {
       const store = useChatbotStore()
-      const mockMessages: IMessage[] = [
-        createMockMessage('msg-1', 'First', 'Customer'),
-        createMockMessage('msg-2', 'Last', 'Assistant'),
-      ]
+      const mockMessages: IMessage[] = [createMockMessage('msg-1', 'First', 'Customer'), createMockMessage('msg-2', 'Last', 'Assistant')]
 
       const mockResponse: IRetrieveLastMessagesResponse = {
         status: 200,
@@ -173,10 +164,7 @@ describe('message-handler', () => {
       const store = useChatbotStore()
 
       // Add existing messages
-      store.setMessages([
-        createMockMessage('old-1', 'Old message 1', 'Customer'),
-        createMockMessage('old-2', 'Old message 2', 'Assistant'),
-      ])
+      store.setMessages([createMockMessage('old-1', 'Old message 1', 'Customer'), createMockMessage('old-2', 'Old message 2', 'Assistant')])
 
       const mockMessages: IMessage[] = [
         createMockMessage('new-1', 'New message 1', 'Customer'),
@@ -241,10 +229,7 @@ describe('message-handler', () => {
     it('does not add duplicate messages', async () => {
       const store = useChatbotStore()
 
-      store.setMessages([
-        createMockMessage('msg-2', 'Existing', 'Customer'),
-        createMockMessage('msg-3', 'Newer', 'Assistant'),
-      ])
+      store.setMessages([createMockMessage('msg-2', 'Existing', 'Customer'), createMockMessage('msg-3', 'Newer', 'Assistant')])
       store.setLatestChatMessageId('msg-3')
 
       const olderMessages: IMessage[] = [
@@ -293,9 +278,7 @@ describe('message-handler', () => {
       const store = useChatbotStore()
       store.setLatestChatMessageId('msg-10')
 
-      const messages = Array.from({ length: 15 }, (_, i) =>
-        createMockMessage(`msg-${i}`, `Message ${i}`, 'Customer'),
-      )
+      const messages = Array.from({ length: 15 }, (_, i) => createMockMessage(`msg-${i}`, `Message ${i}`, 'Customer'))
 
       const mockResponse: IRetrieveLastMessagesResponse = {
         status: 200,
@@ -314,9 +297,7 @@ describe('message-handler', () => {
       const store = useChatbotStore()
       store.setLatestChatMessageId('msg-20')
 
-      const messages = Array.from({ length: 20 }, (_, i) =>
-        createMockMessage(`msg-${i}`, `Message ${i}`, 'Customer'),
-      )
+      const messages = Array.from({ length: 20 }, (_, i) => createMockMessage(`msg-${i}`, `Message ${i}`, 'Customer'))
 
       const mockResponse: IRetrieveLastMessagesResponse = {
         status: 200,
@@ -335,10 +316,7 @@ describe('message-handler', () => {
       const store = useChatbotStore()
       store.setLatestChatMessageId('old-id')
 
-      const messages: IMessage[] = [
-        createMockMessage('msg-1', 'First', 'Customer'),
-        createMockMessage('msg-2', 'Last', 'Assistant'),
-      ]
+      const messages: IMessage[] = [createMockMessage('msg-1', 'First', 'Customer'), createMockMessage('msg-2', 'Last', 'Assistant')]
 
       const mockResponse: IRetrieveLastMessagesResponse = {
         status: 200,

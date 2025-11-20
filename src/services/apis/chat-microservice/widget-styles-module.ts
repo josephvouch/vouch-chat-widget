@@ -27,8 +27,7 @@ export const widgetStylesModule = {
   getStyles: async (): Promise<IGetWidgetStylesResponse> => {
     try {
       return await handle401Wrapper(async () => {
-        const response: AxiosResponse<IGetWidgetStylesResponse> =
-          await chatMicroserviceApi.get(API_PATHS.BASE)
+        const response: AxiosResponse<IGetWidgetStylesResponse> = await chatMicroserviceApi.get(API_PATHS.BASE)
         return response.data
       })
     } catch (error) {

@@ -25,22 +25,15 @@ const defaultHandlers: ISocketEventHandlers = {
     console.info('[socket] typing event received', payload)
     try {
       const chatbotStore = useChatbotStore()
-      const isFromAgent =
-        payload &&
-        typeof payload === 'object' &&
-        payload.source === 'agent'
+      const isFromAgent = payload && typeof payload === 'object' && payload.source === 'agent'
 
       if (!isFromAgent) {
         return
       }
 
       const isTyping = !!payload.isTyping
-      const currentMessages = Array.isArray(chatbotStore.messages)
-        ? chatbotStore.messages
-        : []
-      const hasTypingIndicator = currentMessages.some(
-        (message) => !message.fromMe && message.msgType === 'typing-indicator',
-      )
+      const currentMessages = Array.isArray(chatbotStore.messages) ? chatbotStore.messages : []
+      const hasTypingIndicator = currentMessages.some((message) => !message.fromMe && message.msgType === 'typing-indicator')
 
       if (isTyping) {
         if (!hasTypingIndicator) {
@@ -55,17 +48,10 @@ const defaultHandlers: ISocketEventHandlers = {
           clearTimeout(agentTypingTimeout)
         }
         agentTypingTimeout = setTimeout(() => {
-          const latestMessages = Array.isArray(chatbotStore.messages)
-            ? chatbotStore.messages
-            : []
-          const latestHasIndicator = latestMessages.some(
-            (message) => !message.fromMe && message.msgType === 'typing-indicator',
-          )
+          const latestMessages = Array.isArray(chatbotStore.messages) ? chatbotStore.messages : []
+          const latestHasIndicator = latestMessages.some((message) => !message.fromMe && message.msgType === 'typing-indicator')
           if (latestHasIndicator) {
-            const filtered = latestMessages.filter(
-              (message) =>
-                !(message.msgType === 'typing-indicator' && !message.fromMe),
-            )
+            const filtered = latestMessages.filter((message) => !(message.msgType === 'typing-indicator' && !message.fromMe))
             chatbotStore.setMessages(filtered)
           }
           agentTypingTimeout = null
@@ -75,10 +61,7 @@ const defaultHandlers: ISocketEventHandlers = {
           clearTimeout(agentTypingTimeout)
           agentTypingTimeout = null
         }
-        const filtered = currentMessages.filter(
-          (message) =>
-            !(message.msgType === 'typing-indicator' && !message.fromMe),
-        )
+        const filtered = currentMessages.filter((message) => !(message.msgType === 'typing-indicator' && !message.fromMe))
         chatbotStore.setMessages(filtered)
       }
     } catch (error) {
@@ -88,12 +71,7 @@ const defaultHandlers: ISocketEventHandlers = {
 }
 
 const mapPayloadToMessage = (payload: Record<string, unknown>): IMessage | null => {
-  const idFromPayload =
-    typeof payload._id === 'string'
-      ? payload._id
-      : typeof payload.id === 'string'
-        ? payload.id
-        : undefined
+  const idFromPayload = typeof payload._id === 'string' ? payload._id : typeof payload.id === 'string' ? payload.id : undefined
 
   const textFromPayload =
     typeof payload.text === 'string'
@@ -111,8 +89,7 @@ const mapPayloadToMessage = (payload: Record<string, unknown>): IMessage | null 
 
   const senderByRaw = typeof payload.senderBy === 'string' ? payload.senderBy : 'Assistant'
   const msgType = typeof payload.msgType === 'string' ? payload.msgType : 'text'
-  const createdAt =
-    typeof payload.createdAt === 'string' ? payload.createdAt : new Date().toISOString()
+  const createdAt = typeof payload.createdAt === 'string' ? payload.createdAt : new Date().toISOString()
   const channel = typeof payload.channel === 'string' ? payload.channel : 'chat-widget'
 
   return {
@@ -154,9 +131,7 @@ const handleIncomingChatMessage = (payload: unknown): void => {
   }
 
   if (normalized.fromMe) {
-    const placeholder = [...currentMessages].reverse().find(
-      (message) => message.fromMe && message.text === normalized.text,
-    )
+    const placeholder = [...currentMessages].reverse().find((message) => message.fromMe && message.text === normalized.text)
 
     if (placeholder) {
       chatbotStore.patchMessage(placeholder._id, normalized)
@@ -167,10 +142,7 @@ const handleIncomingChatMessage = (payload: unknown): void => {
   chatbotStore.appendMessage(normalized)
 }
 
-export function registerSocketEventHandlers(
-  socket: Socket,
-  handlers: ISocketEventHandlers = {},
-): () => void {
+export function registerSocketEventHandlers(socket: Socket, handlers: ISocketEventHandlers = {}): () => void {
   const mergedHandlers: ISocketEventHandlers = {
     ...defaultHandlers,
     ...handlers,
@@ -178,11 +150,9 @@ export function registerSocketEventHandlers(
 
   const connectHandler = (): void => mergedHandlers.connect?.(socket)
   const reconnectHandler = (attempt: number): void => mergedHandlers.reconnect?.(attempt)
-  const disconnectHandler = (reason: Socket.DisconnectReason): void =>
-    mergedHandlers.disconnect?.(reason)
+  const disconnectHandler = (reason: Socket.DisconnectReason): void => mergedHandlers.disconnect?.(reason)
   const errorHandler = (error: Error): void => mergedHandlers.error?.(error)
-  const typingHandler = (payload: ITypingEventPayload): void =>
-    mergedHandlers.typing?.(payload)
+  const typingHandler = (payload: ITypingEventPayload): void => mergedHandlers.typing?.(payload)
   const messageReceivedHandler = (payload: unknown): void => {
     handleIncomingChatMessage(payload)
   }

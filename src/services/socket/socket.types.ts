@@ -12,7 +12,7 @@ export interface ITypingEventPayload {
   conversationId: string
   isTyping: boolean
   userId?: string
-   source?: string
+  source?: string
 }
 
 export interface ISocketEventHandlers {

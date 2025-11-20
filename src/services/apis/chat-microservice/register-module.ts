@@ -26,10 +26,7 @@ export const registerModule = {
    */
   register: async (data: IRegisterWidgetRequest): Promise<IRegisterWidgetResponse> => {
     try {
-      const response: AxiosResponse<IRegisterWidgetResponse> = await chatMicroserviceApi.post(
-        API_PATHS.REGISTERS,
-        data,
-      )
+      const response: AxiosResponse<IRegisterWidgetResponse> = await chatMicroserviceApi.post(API_PATHS.REGISTERS, data)
       return response.data
     } catch (error) {
       const apiError = handleApiError(error)

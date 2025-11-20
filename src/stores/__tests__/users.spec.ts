@@ -117,7 +117,6 @@ describe('useUsersStore', () => {
     })
   })
 
-
   describe('full registration flow', () => {
     it('handles complete registration workflow', () => {
       const store = useUsersStore()

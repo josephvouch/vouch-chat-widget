@@ -5,10 +5,7 @@ import type { ITypingIndicatorDot } from '@/types/messaging'
  * The generated dots share the same animation but stagger their delays so the
  * indicator feels dynamic.
  */
-export const createTypingIndicator = (
-  dots = 3,
-  delayStepSeconds = 0.18,
-): ITypingIndicatorDot[] => {
+export const createTypingIndicator = (dots = 3, delayStepSeconds = 0.18): ITypingIndicatorDot[] => {
   if (dots <= 0) {
     return []
   }

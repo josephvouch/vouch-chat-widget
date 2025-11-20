@@ -23,9 +23,7 @@ interface IHistoryLoadResult {
 const HISTORY_PAGE_LIMIT = 20 as const
 
 const sortMessagesChronologically = (messages: IMessage[]): IMessage[] => {
-  return [...messages].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  )
+  return [...messages].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
 }
 
 const determineFromMe = (message: IMessage): boolean => {
@@ -51,12 +49,9 @@ const normalizeMessages = (messages: IMessage[]): IMessage[] => {
 const retrieveAndStoreMessages = async (mode: HistoryLoadMode): Promise<IHistoryLoadResult> => {
   try {
     const chatbotStore = useChatbotStore()
-    const latestChatMessageId =
-      mode === 'prepend' ? chatbotStore.latestChatMessageId : null
+    const latestChatMessageId = mode === 'prepend' ? chatbotStore.latestChatMessageId : null
     const response = await messagingModule.retrieveLastMessages(
-      latestChatMessageId
-        ? { latestChatMessageId, limit: HISTORY_PAGE_LIMIT }
-        : { limit: HISTORY_PAGE_LIMIT },
+      latestChatMessageId ? { latestChatMessageId, limit: HISTORY_PAGE_LIMIT } : { limit: HISTORY_PAGE_LIMIT }
     )
     const payload = response.data ?? []
 
@@ -79,10 +74,7 @@ const retrieveAndStoreMessages = async (mode: HistoryLoadMode): Promise<IHistory
       chatbotStore.setLatestChatMessageId(latestId)
     }
 
-    const hasMore =
-      mode === 'replace'
-        ? true
-        : orderedMessages.length === HISTORY_PAGE_LIMIT
+    const hasMore = mode === 'replace' ? true : orderedMessages.length === HISTORY_PAGE_LIMIT
 
     return { success: true, hasMore }
   } catch (error) {

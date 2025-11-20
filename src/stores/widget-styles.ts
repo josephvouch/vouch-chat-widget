@@ -32,14 +32,12 @@ const createDefaultFontsStyles = (): IFontsStyles => ({
 })
 
 const createDefaultLauncherStyles = (): ILauncherStyles => ({
-  openIconURL:
-    'https://s3.ap-southeast-1.amazonaws.com/files.vouch.sg/0_housekeeping/65f7bb5d421b09001a52b86e/17147332864296511.jpg',
+  openIconURL: 'https://s3.ap-southeast-1.amazonaws.com/files.vouch.sg/0_housekeeping/65f7bb5d421b09001a52b86e/17147332864296511.jpg',
   closeIconURL: 'https://placehold.co/120x120?text=Close',
 })
 
 const createDefaultConversationStyles = (): IConversationStyles => ({
-  avatarUrl:
-    'https://s3.ap-southeast-1.amazonaws.com/files.vouch.sg/0_housekeeping/65f7bb5d421b09001a52b86e/17147332864296511.jpg',
+  avatarUrl: 'https://s3.ap-southeast-1.amazonaws.com/files.vouch.sg/0_housekeeping/65f7bb5d421b09001a52b86e/17147332864296511.jpg',
   backgroundColor: '#F9F9F9',
   bubbleRadius: 5,
   leftBubble: {
@@ -199,5 +197,5 @@ export const useWidgetStylesStore = defineStore(
     persist: {
       key: 'vc_widget_styles',
     },
-  },
+  }
 )
