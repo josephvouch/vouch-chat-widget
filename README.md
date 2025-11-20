@@ -12,8 +12,8 @@ Vue 3 + TypeScript + Vite codebase for the embeddable AVA chat experience. The p
 
 ## Requirements
 
-- Node.js 18+ (LTS recommended)
-- pnpm 9+
+- Node.js 24+ (recommended)
+- pnpm 10+
 
 ## Getting Started
 
