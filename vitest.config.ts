@@ -12,6 +12,9 @@ export default mergeConfig(
       coverage: {
         reporter: ['text', 'html'],
       },
+      typecheck: {
+        tsconfig: './tsconfig.vitest.json',
+      },
     },
   })
 )

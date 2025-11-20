@@ -47,5 +47,5 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Build project
-        run: pnpm build
+      - name: Build project Widgets
+        run: pnpm build:widgets

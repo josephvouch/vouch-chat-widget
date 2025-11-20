@@ -46,7 +46,7 @@ export default [
         parser: tsParser,
         ecmaVersion: 'latest',
         sourceType: 'module',
-        projectService: true,
+        project: ['./tsconfig.app.json', './tsconfig.node.json', './tsconfig.vitest.json'],
         extraFileExtensions: ['.vue'],
         createDefaultProgram: false,
       },
@@ -122,7 +122,7 @@ export default [
     settings: {
       'import/resolver': {
         typescript: {
-          project: ['./tsconfig.app.json', './tsconfig.node.json'],
+          project: ['./tsconfig.app.json', './tsconfig.node.json', './tsconfig.vitest.json'],
         },
         alias: {
           map: [
